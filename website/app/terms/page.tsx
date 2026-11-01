@@ -65,7 +65,7 @@ export default function TermsPage() {
             <h2 className="text-xl font-extrabold text-[#30232a]">6. Account restrictions</h2>
             <p className="mt-3">
               Accounts that violate platform rules may be investigated,
-              restricted or suspended, subject to the platform's procedures
+              restricted or suspended, subject to the platform&apos;s procedures
               and applicable law.
             </p>
           </section>
