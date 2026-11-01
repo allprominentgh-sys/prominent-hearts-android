@@ -2,6 +2,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import type { User } from "@supabase/supabase-js";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import {
@@ -12,7 +13,6 @@ import {
   Menu,
   X,
   LogOut,
-  Settings,
   MapPin,
   Search,
   Bell,
@@ -52,7 +52,7 @@ export default function DashboardPage() {
   const router = useRouter();
 
   const [supabase] = useState(() => createClient());
-  const [user, setUser] = useState<any>(null);
+  const [user, setUser] = useState<User | null>(null);
   const [profile, setProfile] = useState<Profile | null>(null);
   const [members, setMembers] = useState<Profile[]>([]);
   const [likedIds, setLikedIds] = useState<string[]>([]);
@@ -76,7 +76,8 @@ export default function DashboardPage() {
     let mounted = true;
 
     async function loadDashboard() {
-      const { data, error: authError } = await supabase.auth.getUser();
+      const { data, error: authError } =
+        await supabase.auth.getUser();
 
       if (!mounted) return;
 
@@ -87,13 +88,14 @@ export default function DashboardPage() {
 
       setUser(data.user);
 
-      const { data: ownProfile, error: profileError } = await supabase
-        .from("profiles")
-        .select(
-          "id, username, full_name, location, bio, relationship_intention, avatar_path"
-        )
-        .eq("id", data.user.id)
-        .maybeSingle();
+      const { data: ownProfile, error: profileError } =
+        await supabase
+          .from("profiles")
+          .select(
+            "id, username, full_name, location, bio, relationship_intention, avatar_path"
+          )
+          .eq("id", data.user.id)
+          .maybeSingle();
 
       if (!mounted) return;
 
@@ -122,14 +124,15 @@ export default function DashboardPage() {
         }));
       }
 
-      const { data: otherMembers, error: membersError } = await supabase
-        .from("profiles")
-        .select(
-          "id, username, full_name, location, bio, relationship_intention, avatar_path"
-        )
-        .eq("is_active", true)
-        .neq("id", data.user.id)
-        .limit(30);
+      const { data: otherMembers, error: membersError } =
+        await supabase
+          .from("profiles")
+          .select(
+            "id, username, full_name, location, bio, relationship_intention, avatar_path"
+          )
+          .eq("is_active", true)
+          .neq("id", data.user.id)
+          .limit(30);
 
       if (!mounted) return;
 
@@ -227,7 +230,10 @@ export default function DashboardPage() {
     return (
       <main className="flex min-h-screen items-center justify-center bg-[#fff8fa]">
         <div className="text-center">
-          <Loader2 className="mx-auto animate-spin text-rose-600" size={38} />
+          <Loader2
+            className="mx-auto animate-spin text-rose-600"
+            size={38}
+          />
           <p className="mt-4 font-semibold text-slate-600">
             Loading your Prominent Hearts account...
           </p>
@@ -244,18 +250,16 @@ export default function DashboardPage() {
 
   return (
     <main className="min-h-screen bg-[#fff8fa] pb-28 text-[#30202a]">
-
-      {/* HEADER */}
       <header className="sticky top-0 z-40 border-b border-rose-100 bg-white">
         <div className="mx-auto flex h-[76px] max-w-7xl items-center justify-between px-4 sm:px-6">
-
           <Link href="/" className="flex items-center gap-2">
             <span className="flex h-10 w-10 items-center justify-center rounded-2xl bg-gradient-to-br from-rose-600 to-pink-500 text-white">
               <Heart fill="currentColor" size={24} />
             </span>
 
             <span className="font-serif text-xl font-bold">
-              Prominent <span className="text-rose-600">Hearts</span>
+              Prominent{" "}
+              <span className="text-rose-600">Hearts</span>
             </span>
           </Link>
 
@@ -310,9 +314,7 @@ export default function DashboardPage() {
         )}
       </header>
 
-      {/* DASHBOARD BODY */}
       <div className="mx-auto max-w-7xl px-4 py-6 sm:px-6">
-
         {error && (
           <div className="mb-5 rounded-xl border border-red-200 bg-red-50 p-4 text-sm text-red-700">
             {error}
@@ -325,7 +327,6 @@ export default function DashboardPage() {
           </div>
         )}
 
-        {/* WELCOME CARD */}
         <section className="mb-7 rounded-[2rem] bg-gradient-to-br from-[#651c3c] via-[#923456] to-[#c65377] p-6 text-white shadow-lg sm:p-9">
           <div className="flex items-center gap-2 text-sm font-semibold text-rose-100">
             <Sparkles size={18} />
@@ -351,28 +352,36 @@ export default function DashboardPage() {
           </button>
         </section>
 
-        {/* ACCOUNT SUMMARY */}
         <section className="mb-8 grid grid-cols-2 gap-3 sm:grid-cols-3">
           <div className="rounded-2xl border border-rose-100 bg-white p-4">
             <Compass className="text-rose-500" size={23} />
-            <p className="mt-3 text-2xl font-bold">{members.length}</p>
-            <p className="text-sm text-gray-500">Discover profiles</p>
+            <p className="mt-3 text-2xl font-bold">
+              {members.length}
+            </p>
+            <p className="text-sm text-gray-500">
+              Discover profiles
+            </p>
           </div>
 
           <div className="rounded-2xl border border-rose-100 bg-white p-4">
             <Heart className="text-rose-500" size={23} />
-            <p className="mt-3 text-2xl font-bold">{likedIds.length}</p>
-            <p className="text-sm text-gray-500">Likes this session</p>
+            <p className="mt-3 text-2xl font-bold">
+              {likedIds.length}
+            </p>
+            <p className="text-sm text-gray-500">
+              Likes this session
+            </p>
           </div>
 
           <div className="col-span-2 rounded-2xl border border-rose-100 bg-white p-4 sm:col-span-1">
             <ShieldCheck className="text-rose-500" size={23} />
             <p className="mt-3 font-bold">Adults 18+</p>
-            <p className="text-sm text-gray-500">Purposeful connections</p>
+            <p className="text-sm text-gray-500">
+              Purposeful connections
+            </p>
           </div>
         </section>
 
-        {/* DISCOVER */}
         {activeTab === "discover" && (
           <section>
             <div className="mb-6 flex flex-wrap items-center justify-between gap-3">
@@ -472,7 +481,6 @@ export default function DashboardPage() {
           </section>
         )}
 
-        {/* LIKES */}
         {activeTab === "likes" && (
           <section>
             <p className="text-xs font-bold tracking-[3px] text-rose-500">
@@ -528,7 +536,6 @@ export default function DashboardPage() {
           </section>
         )}
 
-        {/* MESSAGES */}
         {activeTab === "messages" && (
           <section>
             <p className="text-xs font-bold tracking-[3px] text-rose-500">
@@ -551,7 +558,6 @@ export default function DashboardPage() {
           </section>
         )}
 
-        {/* MY PROFILE */}
         {activeTab === "profile" && (
           <section>
             <div className="mb-6 flex flex-wrap items-center justify-between gap-3">
@@ -760,10 +766,8 @@ export default function DashboardPage() {
             </button>
           </section>
         )}
-
       </div>
 
-      {/* FLOATING BOTTOM NAVIGATION */}
       <nav
         aria-label="Member navigation"
         className="fixed bottom-0 left-0 right-0 z-[100] border-t border-rose-100 bg-white/95 shadow-[0_-5px_25px_rgba(80,20,40,0.08)] backdrop-blur-md"
