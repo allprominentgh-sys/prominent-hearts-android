@@ -19,12 +19,12 @@ export default function NotFound() {
         </h1>
 
         <h2 className="mt-4 text-2xl font-extrabold">
-          This page couldn't be found.
+          This page couldn&apos;t be found.
         </h2>
 
         <p className="mt-4 leading-7 text-gray-500">
-          It looks like this page has moved or doesn't exist.
-          Let's get you back to meaningful connections.
+          It looks like this page has moved or doesn&apos;t exist.
+          Let&apos;s get you back to meaningful connections.
         </p>
 
         <Link
