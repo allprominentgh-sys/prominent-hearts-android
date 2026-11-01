@@ -11,68 +11,103 @@ import {
   MessageCircle,
   Users,
   ArrowRight,
-  CheckCircle2,
   Sparkles,
+  Compass,
   UserRound,
+  Bookmark,
+  MapPin,
+  Gift,
 } from "lucide-react";
+
+const navigation = [
+  { label: "Discover", href: "/dashboard?tab=discover", icon: Compass },
+  { label: "Likes", href: "/dashboard?tab=likes", icon: Heart },
+  { label: "Messages", href: "/dashboard?tab=messages", icon: MessageCircle },
+  { label: "My Profile", href: "/dashboard?tab=profile", icon: UserRound },
+];
 
 const intentions = [
   {
     title: "Marriage",
     description: "Find someone ready for a committed marriage.",
-    href: "/login",
     number: "01",
   },
   {
     title: "Contextual Marriage",
     description: "Explore marriage with clear, mutually agreed terms.",
-    href: "/marriage-agreement",
     number: "02",
   },
   {
     title: "Long-term Relationship",
     description: "Build a meaningful long-term connection.",
-    href: "/login",
     number: "03",
   },
   {
     title: "Get to Know Someone Intentionally",
     description: "Start with friendship and grow with purpose.",
-    href: "/login",
     number: "04",
   },
 ];
 
 const profiles = [
   {
-    name: "Ama",
-    age: 26,
-    location: "Accra, Ghana",
-    intention: "Marriage",
+    name: "Abena",
+    age: 28,
+    occupation: "Entrepreneur",
+    gender: "Woman",
+    location: "Accra",
+    intention: "Marriage-minded",
+    bio: "Kindness, honesty, family and growing together matter to me. I hope to meet a thoughtful partner ready to build a lasting home.",
+    interests: ["Family", "Faith", "Travel"],
     initials: "A",
-    color: "bg-rose-100 text-rose-600",
+    match: "96%",
+    color: "from-rose-200 to-orange-100",
   },
   {
     name: "Daniel",
-    age: 29,
-    location: "Kumasi, Ghana",
+    age: 30,
+    occupation: "Business Owner",
+    gender: "Man",
+    location: "Kumasi",
     intention: "Long-term relationship",
+    bio: "I value honesty, laughter and meaningful conversations. Looking for someone with shared values and a positive outlook.",
+    interests: ["Business", "Travel", "Family"],
     initials: "D",
-    color: "bg-blue-100 text-blue-600",
+    match: "92%",
+    color: "from-sky-100 to-indigo-100",
   },
   {
     name: "Akosua",
-    age: 24,
-    location: "Tema, Ghana",
-    intention: "Get to know someone",
+    age: 26,
+    occupation: "Teacher",
+    gender: "Woman",
+    location: "Tema",
+    intention: "Marriage-minded",
+    bio: "I appreciate kindness, mutual respect and a peaceful home. Hoping to meet someone intentional about the future.",
+    interests: ["Reading", "Faith", "Music"],
     initials: "A",
-    color: "bg-purple-100 text-purple-600",
+    match: "94%",
+    color: "from-purple-100 to-pink-100",
+  },
+  {
+    name: "Michael",
+    age: 32,
+    occupation: "Engineer",
+    gender: "Man",
+    location: "Accra",
+    intention: "Marriage-minded",
+    bio: "Family-oriented, thoughtful and ambitious. I believe strong relationships grow through friendship and understanding.",
+    interests: ["Technology", "Fitness", "Travel"],
+    initials: "M",
+    match: "90%",
+    color: "from-amber-100 to-rose-100",
   },
 ];
 
 export default function HomePage() {
   const [menuOpen, setMenuOpen] = useState(false);
   const [likedProfiles, setLikedProfiles] = useState<string[]>([]);
+  const [savedProfiles, setSavedProfiles] = useState<string[]>([]);
 
   function toggleLike(name: string) {
     setLikedProfiles((current) =>
@@ -82,386 +117,335 @@ export default function HomePage() {
     );
   }
 
+  function toggleSave(name: string) {
+    setSavedProfiles((current) =>
+      current.includes(name)
+        ? current.filter((item) => item !== name)
+        : [...current, name]
+    );
+  }
+
   return (
-    <main className="min-h-screen overflow-hidden bg-[#fff8fa] text-[#34232b]">
+    <main className="min-h-screen overflow-x-hidden bg-[#fff8fa] pb-24 text-[#30202a]">
+
       {/* HEADER */}
-      <header className="sticky top-0 z-50 border-b border-rose-100 bg-white/95 backdrop-blur">
-        <div className="container flex h-20 items-center justify-between">
-          <Link href="/" className="flex items-center gap-2">
-            <div className="flex h-10 w-10 items-center justify-center rounded-full bg-rose-100">
-              <Heart
-                size={22}
-                fill="currentColor"
-                className="text-rose-500"
-              />
+      <header className="sticky top-0 z-50 border-b border-rose-100 bg-white">
+        <div className="mx-auto flex h-[88px] max-w-7xl items-center justify-between px-4 sm:px-6">
+
+          <Link href="/" className="flex items-center gap-3">
+            <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-gradient-to-br from-rose-600 to-pink-500 text-white">
+              <Heart size={28} fill="currentColor" />
             </div>
 
-            <span className="text-xl font-black tracking-tight">
-              Prominent <span className="text-rose-500">Hearts</span>
-            </span>
+            <div>
+              <div className="font-serif text-xl font-bold tracking-tight sm:text-2xl">
+                Prominent Hearts
+              </div>
+              <div className="mt-1 text-[10px] font-bold tracking-[3px] text-rose-500 sm:text-xs">
+                MEET WITH PURPOSE
+              </div>
+            </div>
           </Link>
 
-          <nav className="hidden items-center gap-8 text-sm font-semibold text-gray-600 md:flex">
-            <a href="#about" className="hover:text-rose-500">
-              About
-            </a>
-            <a href="#intentions" className="hover:text-rose-500">
-              Relationship intentions
-            </a>
-            <a href="#discover" className="hover:text-rose-500">
-              Discover
-            </a>
-            <Link href="/terms" className="hover:text-rose-500">
-              Terms
-            </Link>
-          </nav>
-
-          <div className="hidden items-center gap-3 md:flex">
+          <div className="flex items-center gap-3">
             <Link
               href="/login"
-              className="text-sm font-bold text-rose-600"
+              className="rounded-full bg-rose-600 px-5 py-3 text-sm font-bold text-white transition hover:bg-rose-700 sm:px-7"
             >
-              Log in
+              Join free
             </Link>
 
-            <Link href="/login" className="primary-button">
-              Join Prominent Hearts
-            </Link>
+            <button
+              type="button"
+              aria-label={menuOpen ? "Close menu" : "Open menu"}
+              aria-expanded={menuOpen}
+              onClick={() => setMenuOpen(!menuOpen)}
+              className="rounded-xl p-2 text-slate-800 hover:bg-rose-50"
+            >
+              {menuOpen ? <X size={28} /> : <Menu size={28} />}
+            </button>
           </div>
-
-          <button
-            type="button"
-            aria-label={menuOpen ? "Close menu" : "Open menu"}
-            onClick={() => setMenuOpen(!menuOpen)}
-            className="rounded-xl p-2 text-gray-700 md:hidden"
-          >
-            {menuOpen ? <X size={25} /> : <Menu size={25} />}
-          </button>
         </div>
 
+        {/* HAMBURGER DROPDOWN */}
         {menuOpen && (
-          <nav className="border-t border-rose-100 bg-white p-5 md:hidden">
-            <div className="flex flex-col gap-5 font-semibold">
-              <a href="#about" onClick={() => setMenuOpen(false)}>
-                About
-              </a>
+          <>
+            <button
+              type="button"
+              aria-label="Close menu"
+              onClick={() => setMenuOpen(false)}
+              className="fixed inset-0 z-40 bg-black/20"
+            />
 
-              <a href="#intentions" onClick={() => setMenuOpen(false)}>
-                Relationship intentions
-              </a>
+            <div className="absolute right-4 top-[78px] z-50 w-72 overflow-hidden rounded-2xl border border-rose-100 bg-white p-3 shadow-2xl">
+              <div className="border-b border-rose-100 px-4 py-3">
+                <p className="font-bold">Prominent Hearts</p>
+                <p className="text-xs text-gray-500">
+                  Meaningful connections begin here
+                </p>
+              </div>
 
-              <a href="#discover" onClick={() => setMenuOpen(false)}>
-                Discover
-              </a>
+              {navigation.map((item) => {
+                const Icon = item.icon;
 
-              <Link href="/terms" onClick={() => setMenuOpen(false)}>
-                Terms of Use
-              </Link>
+                return (
+                  <Link
+                    key={item.label}
+                    href={item.href}
+                    onClick={() => setMenuOpen(false)}
+                    className="flex items-center gap-4 rounded-xl px-4 py-4 font-semibold text-slate-800 hover:bg-rose-50 hover:text-rose-600"
+                  >
+                    <Icon size={21} />
+                    {item.label}
+                  </Link>
+                );
+              })}
 
-              <Link
-                href="/login"
-                onClick={() => setMenuOpen(false)}
-                className="primary-button"
-              >
-                Join Prominent Hearts
-              </Link>
-
-              <Link
-                href="/login"
-                onClick={() => setMenuOpen(false)}
-                className="text-rose-600"
-              >
-                Log in
-              </Link>
+              <div className="mt-2 border-t border-rose-100 pt-2">
+                <Link
+                  href="/login"
+                  onClick={() => setMenuOpen(false)}
+                  className="block rounded-xl px-4 py-3 font-bold text-rose-600 hover:bg-rose-50"
+                >
+                  Sign in / Join free
+                </Link>
+              </div>
             </div>
-          </nav>
+          </>
         )}
       </header>
 
-      {/* HERO */}
-      <section className="relative">
-        <div className="container grid min-h-[620px] items-center gap-12 py-16 md:grid-cols-2 md:py-24">
-          <div>
-            <div className="mb-7 inline-flex items-center gap-2 rounded-full border border-rose-200 bg-white px-4 py-2 text-sm font-bold text-rose-600">
-              <Sparkles size={16} />
-              Meaningful connections begin here
+      {/* HERO SECTION */}
+      <section className="px-4 pt-8 sm:px-6 sm:pt-12">
+        <div className="relative mx-auto max-w-7xl overflow-hidden rounded-[2.5rem] bg-gradient-to-br from-[#651c3c] via-[#923456] to-[#c65377] px-6 py-10 text-white shadow-xl shadow-rose-200/50 sm:px-12 sm:py-14 lg:px-16 lg:py-16">
+
+          <div className="pointer-events-none absolute -right-16 -top-24 h-96 w-96 rounded-full border-[70px] border-white/5" />
+          <div className="pointer-events-none absolute -right-24 top-0 h-80 w-80 rounded-full bg-white/5 blur-2xl" />
+
+          <div className="relative max-w-3xl">
+            <div className="inline-flex items-center gap-3 rounded-full border border-white/25 bg-white/10 px-4 py-3 text-sm font-semibold backdrop-blur">
+              <Sparkles size={19} />
+              A better way to find your person
             </div>
 
-            <h1 className="max-w-2xl text-5xl font-black leading-[1.1] tracking-tight sm:text-6xl lg:text-7xl">
-              Your heart deserves
-              <span className="block text-rose-500">
-                something real.
+            <h1 className="mt-10 font-serif text-5xl font-bold leading-[1.12] tracking-tight sm:text-6xl lg:text-7xl">
+              Love with intention.
+              <span className="mt-2 block text-rose-200">
+                Build a lifetime.
               </span>
             </h1>
 
-            <p className="mt-7 max-w-xl text-lg leading-8 text-gray-600">
-              Meet people with genuine intentions. Whether you are looking
-              for marriage, a lasting relationship or someone to know
-              intentionally, start your journey with Prominent Hearts.
+            <p className="mt-8 max-w-2xl text-lg leading-9 text-rose-50 sm:text-xl">
+              A community for adults who value meaningful connection,
+              shared values and the possibility of marriage. Less noise.
+              More purpose.
             </p>
 
-            <div className="mt-9 flex flex-col gap-4 sm:flex-row">
-              <Link href="/login" className="primary-button gap-2">
-                Find your connection
-                <ArrowRight size={18} />
-              </Link>
-
-              <a
-                href="#intentions"
-                className="inline-flex items-center justify-center rounded-full border border-rose-200 bg-white px-7 py-3 font-bold text-rose-600 transition hover:bg-rose-50"
-              >
-                Explore intentions
-              </a>
-            </div>
-
-            <div className="mt-10 flex flex-wrap gap-6 text-sm font-semibold text-gray-500">
-              <span className="flex items-center gap-2">
-                <ShieldCheck size={18} className="text-rose-500" />
-                Adults 18+
-              </span>
-
-              <span className="flex items-center gap-2">
-                <Heart size={18} className="text-rose-500" />
-                Purposeful connections
-              </span>
-            </div>
+            <Link
+              href="/login"
+              className="mt-10 inline-flex items-center gap-3 rounded-full bg-white px-8 py-5 text-lg font-bold text-rose-700 transition hover:bg-rose-50"
+            >
+              Create your profile
+              <ArrowRight size={21} />
+            </Link>
           </div>
 
-          <div className="relative mx-auto w-full max-w-lg">
-            <div className="absolute -left-8 top-10 h-32 w-32 rounded-full bg-rose-200/60 blur-3xl" />
-            <div className="absolute -right-8 bottom-10 h-40 w-40 rounded-full bg-pink-200/70 blur-3xl" />
+          <div className="relative mt-14 grid grid-cols-3 gap-3 border-t border-white/20 pt-10 sm:gap-5">
+            <div className="rounded-3xl bg-white/10 p-4 backdrop-blur sm:p-6">
+              <p className="text-sm text-rose-100 sm:text-base">Purpose</p>
+              <p className="mt-2 text-base font-bold sm:text-xl">
+                Marriage first
+              </p>
+            </div>
 
-            <div className="relative rounded-[2rem] border border-rose-100 bg-white p-5 shadow-xl shadow-rose-100/60 sm:p-8">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-sm font-bold text-rose-500">
-                    Your journey
-                  </p>
-                  <h2 className="mt-1 text-2xl font-black">
-                    Starts with intention
-                  </h2>
-                </div>
+            <div className="rounded-3xl bg-white/10 p-4 backdrop-blur sm:p-6">
+              <p className="text-sm text-rose-100 sm:text-base">People</p>
+              <p className="mt-2 text-base font-bold sm:text-xl">
+                Values-led
+              </p>
+            </div>
 
-                <div className="rounded-2xl bg-rose-100 p-3 text-rose-500">
-                  <Heart size={27} fill="currentColor" />
-                </div>
-              </div>
-
-              <div className="mt-8 space-y-4">
-                {intentions.map((item) => (
-                  <Link
-                    key={item.number}
-                    href={item.href}
-                    className="flex items-center gap-4 rounded-2xl border border-rose-100 p-4 transition hover:border-rose-300 hover:bg-rose-50"
-                  >
-                    <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-rose-100 text-sm font-black text-rose-600">
-                      {item.number}
-                    </span>
-
-                    <span className="min-w-0 flex-1">
-                      <span className="block font-bold">
-                        {item.title}
-                      </span>
-
-                      <span className="mt-1 block text-sm leading-5 text-gray-500">
-                        {item.description}
-                      </span>
-                    </span>
-
-                    <ArrowRight
-                      size={18}
-                      className="shrink-0 text-rose-400"
-                    />
-                  </Link>
-                ))}
-              </div>
-
-              <p className="mt-6 text-center text-xs leading-5 text-gray-400">
-                Choose what you are genuinely looking for.
+            <div className="rounded-3xl bg-white/10 p-4 backdrop-blur sm:p-6">
+              <p className="text-sm text-rose-100 sm:text-base">Safety</p>
+              <p className="mt-2 text-base font-bold sm:text-xl">
+                Respect always
               </p>
             </div>
           </div>
         </div>
       </section>
 
-      {/* ABOUT */}
-      <section id="about" className="border-y border-rose-100 bg-white py-16">
-        <div className="container">
-          <div className="mx-auto max-w-3xl text-center">
-            <p className="text-sm font-bold uppercase tracking-[3px] text-rose-500">
-              About Prominent Hearts
-            </p>
+      {/* THOUGHTFUL CONNECTIONS */}
+      <section className="mx-auto max-w-7xl px-4 pb-8 pt-16 sm:px-6">
+        <p className="text-sm font-bold tracking-[4px] text-rose-500">
+          THOUGHTFUL CONNECTIONS
+        </p>
 
-            <h2 className="mt-4 text-3xl font-black sm:text-4xl">
-              Beyond ordinary dating
-            </h2>
+        <h2 className="mt-4 font-serif text-3xl font-bold sm:text-4xl">
+          Meet people with purpose
+        </h2>
 
-            <p className="mt-5 leading-8 text-gray-500">
-              We believe relationships should begin with honesty, respect
-              and a clear understanding of what both people want.
-              Prominent Hearts gives adults a place to explore meaningful
-              connections with purpose.
-            </p>
-          </div>
-
-          <div className="mt-12 grid gap-6 md:grid-cols-3">
-            <div className="rounded-3xl bg-[#fff8fa] p-7">
-              <Heart size={30} className="text-rose-500" />
-              <h3 className="mt-5 text-xl font-black">
-                Genuine intentions
-              </h3>
-              <p className="mt-3 leading-7 text-gray-500">
-                Be clear about the kind of relationship you want to build.
-              </p>
-            </div>
-
-            <div className="rounded-3xl bg-[#fff8fa] p-7">
-              <ShieldCheck size={30} className="text-rose-500" />
-              <h3 className="mt-5 text-xl font-black">
-                Respect and safety
-              </h3>
-              <p className="mt-3 leading-7 text-gray-500">
-                A community built around adult participation and respectful conduct.
-              </p>
-            </div>
-
-            <div className="rounded-3xl bg-[#fff8fa] p-7">
-              <MessageCircle size={30} className="text-rose-500" />
-              <h3 className="mt-5 text-xl font-black">
-                Meaningful conversations
-              </h3>
-              <p className="mt-3 leading-7 text-gray-500">
-                Get to know people through honest communication and shared goals.
-              </p>
-            </div>
-          </div>
-        </div>
+        <p className="mt-4 max-w-2xl leading-7 text-gray-500">
+          Discover people who share your relationship intentions,
+          values and hopes for the future.
+        </p>
       </section>
 
       {/* RELATIONSHIP INTENTIONS */}
-      <section id="intentions" className="py-20">
-        <div className="container">
-          <div className="mx-auto max-w-2xl text-center">
-            <p className="text-sm font-bold uppercase tracking-[3px] text-rose-500">
-              Your relationship journey
-            </p>
+      <section className="mx-auto max-w-7xl px-4 pb-14 sm:px-6">
+        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+          {intentions.map((item) => (
+            <Link
+              key={item.number}
+              href="/login"
+              className="rounded-3xl border border-rose-100 bg-white p-6 shadow-sm transition hover:-translate-y-1 hover:shadow-lg"
+            >
+              <span className="text-sm font-bold text-rose-400">
+                {item.number}
+              </span>
 
-            <h2 className="mt-4 text-3xl font-black sm:text-4xl">
-              What are you looking for?
-            </h2>
+              <h3 className="mt-4 font-serif text-xl font-bold">
+                {item.title}
+              </h3>
 
-            <p className="mt-4 leading-7 text-gray-500">
-              There is no need to follow someone else&apos;s path.
-              Choose the intention that reflects yours.
-            </p>
-          </div>
+              <p className="mt-3 text-sm leading-6 text-gray-500">
+                {item.description}
+              </p>
 
-          <div className="mt-12 grid gap-5 sm:grid-cols-2">
-            {intentions.map((item) => (
-              <Link
-                key={item.number}
-                href={item.href}
-                className="group rounded-3xl border border-rose-100 bg-white p-7 transition hover:-translate-y-1 hover:border-rose-300 hover:shadow-lg hover:shadow-rose-100"
-              >
-                <div className="flex items-center justify-between">
-                  <span className="text-sm font-black text-rose-400">
-                    {item.number}
-                  </span>
-
-                  <ArrowRight className="text-rose-400 transition group-hover:translate-x-1" />
-                </div>
-
-                <h3 className="mt-7 text-xl font-black">
-                  {item.title}
-                </h3>
-
-                <p className="mt-3 leading-7 text-gray-500">
-                  {item.description}
-                </p>
-
-                <span className="mt-6 inline-flex items-center gap-2 text-sm font-bold text-rose-600">
-                  Explore this intention
-                  <ArrowRight size={16} />
-                </span>
-              </Link>
-            ))}
-          </div>
+              <span className="mt-5 inline-flex items-center gap-2 text-sm font-bold text-rose-600">
+                Explore
+                <ArrowRight size={16} />
+              </span>
+            </Link>
+          ))}
         </div>
       </section>
 
-      {/* DISCOVER */}
-      <section id="discover" className="bg-white py-20">
-        <div className="container">
-          <div className="flex flex-col justify-between gap-5 sm:flex-row sm:items-end">
+      {/* DISCOVER PROFILES */}
+      <section className="bg-white py-14">
+        <div className="mx-auto max-w-7xl px-4 sm:px-6">
+          <div className="mb-8 flex items-end justify-between gap-4">
             <div>
-              <p className="text-sm font-bold uppercase tracking-[3px] text-rose-500">
-                Discover
+              <p className="text-sm font-bold tracking-[3px] text-rose-500">
+                DISCOVER
               </p>
 
-              <h2 className="mt-3 text-3xl font-black sm:text-4xl">
-                Meet our community
+              <h2 className="mt-3 font-serif text-3xl font-bold sm:text-4xl">
+                Suggested profiles
               </h2>
-
-              <p className="mt-3 text-gray-500">
-                Sample profiles showing how member discovery can look.
-              </p>
             </div>
 
-            <span className="text-xs font-semibold text-gray-400">
-              Demonstration profiles only
+            <span className="text-xs text-gray-400">
+              Sample profiles
             </span>
           </div>
 
-          <div className="mt-10 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+          <div className="grid gap-7 sm:grid-cols-2 lg:grid-cols-3">
             {profiles.map((profile) => {
               const liked = likedProfiles.includes(profile.name);
+              const saved = savedProfiles.includes(profile.name);
 
               return (
                 <article
                   key={profile.name}
-                  className="overflow-hidden rounded-3xl border border-rose-100 bg-[#fff8fa]"
+                  className="overflow-hidden rounded-[2rem] border border-rose-100 bg-white shadow-sm"
                 >
-                  <div className="flex h-52 items-center justify-center bg-gradient-to-br from-rose-100 to-pink-50">
-                    <div
-                      className={`flex h-28 w-28 items-center justify-center rounded-full text-5xl font-black shadow-sm ${profile.color}`}
-                    >
+                  {/* PROFILE IMAGE PLACEHOLDER */}
+                  <div className={`relative flex h-64 items-center justify-center bg-gradient-to-br ${profile.color}`}>
+                    <div className="flex h-36 w-36 items-center justify-center rounded-full border-[7px] border-white/80 bg-white/70 font-serif text-6xl text-slate-700">
                       {profile.initials}
                     </div>
-                  </div>
 
-                  <div className="p-6">
-                    <div className="flex items-center justify-between gap-3">
-                      <h3 className="text-xl font-black">
-                        {profile.name}, {profile.age}
-                      </h3>
-
-                      <UserRound className="text-rose-400" />
+                    <div className="absolute left-5 top-5 rounded-full bg-white px-4 py-2 text-sm font-bold text-rose-600 shadow-sm">
+                      <Sparkles size={14} className="mr-1 inline" />
+                      {profile.match} match
                     </div>
 
-                    <p className="mt-2 text-sm text-gray-500">
-                      {profile.location}
-                    </p>
-
-                    <p className="mt-4 rounded-full bg-white px-4 py-2 text-xs font-bold text-rose-600">
-                      {profile.intention}
-                    </p>
+                    <div className="absolute right-5 top-5 rounded-full bg-white px-4 py-2 text-sm font-semibold text-emerald-700 shadow-sm">
+                      ● Online
+                    </div>
 
                     <button
                       type="button"
-                      onClick={() => toggleLike(profile.name)}
-                      className={`mt-5 flex w-full items-center justify-center gap-2 rounded-full border px-5 py-3 text-sm font-bold transition ${
-                        liked
-                          ? "border-rose-500 bg-rose-500 text-white"
-                          : "border-rose-200 bg-white text-rose-600 hover:bg-rose-50"
-                      }`}
+                      aria-label={saved ? "Remove saved profile" : "Save profile"}
+                      onClick={() => toggleSave(profile.name)}
+                      className="absolute bottom-5 right-5 flex h-12 w-12 items-center justify-center rounded-full bg-white text-slate-600 shadow-md"
                     >
-                      <Heart
-                        size={17}
-                        fill={liked ? "currentColor" : "none"}
+                      <Bookmark
+                        size={21}
+                        fill={saved ? "currentColor" : "none"}
                       />
-
-                      {liked ? "Liked" : "Like profile"}
                     </button>
+                  </div>
+
+                  <div className="p-6">
+                    <div className="flex flex-wrap items-center justify-between gap-3">
+                      <h3 className="font-serif text-3xl font-bold">
+                        {profile.name}, {profile.age}
+                      </h3>
+
+                      <span className="rounded-full bg-rose-50 px-3 py-2 text-xs font-bold text-rose-600">
+                        {profile.intention}
+                      </span>
+                    </div>
+
+                    <p className="mt-3 text-sm text-gray-500">
+                      {profile.occupation} · {profile.gender}
+                    </p>
+
+                    <p className="mt-3 flex items-center gap-2 text-sm text-gray-500">
+                      <MapPin size={17} />
+                      {profile.location}
+                    </p>
+
+                    <p className="mt-5 leading-7 text-slate-600">
+                      {profile.bio}
+                    </p>
+
+                    <div className="mt-5 flex flex-wrap gap-2">
+                      {profile.interests.map((interest) => (
+                        <span
+                          key={interest}
+                          className="rounded-full bg-slate-50 px-4 py-2 text-xs font-semibold text-slate-500"
+                        >
+                          {interest}
+                        </span>
+                      ))}
+                    </div>
+
+                    <div className="mt-7 grid grid-cols-3 gap-2 border-t border-gray-100 pt-5">
+                      <button
+                        type="button"
+                        onClick={() => toggleLike(profile.name)}
+                        className={`flex flex-col items-center gap-2 rounded-xl py-3 text-sm font-semibold ${
+                          liked
+                            ? "bg-rose-50 text-rose-600"
+                            : "text-slate-500 hover:bg-rose-50"
+                        }`}
+                      >
+                        <Heart
+                          size={22}
+                          fill={liked ? "currentColor" : "none"}
+                        />
+                        {liked ? "Liked" : "Like"}
+                      </button>
+
+                      <Link
+                        href="/login"
+                        className="flex flex-col items-center gap-2 rounded-xl py-3 text-sm font-semibold text-slate-500 hover:bg-rose-50"
+                      >
+                        <Gift size={22} />
+                        Gift
+                      </Link>
+
+                      <Link
+                        href="/login"
+                        className="flex flex-col items-center gap-2 rounded-xl py-3 text-sm font-semibold text-slate-500 hover:bg-rose-50"
+                      >
+                        <MessageCircle size={22} />
+                        Chat
+                      </Link>
+                    </div>
                   </div>
                 </article>
               );
@@ -469,93 +453,49 @@ export default function HomePage() {
           </div>
 
           <p className="mt-8 text-center text-xs leading-6 text-gray-400">
-            These are demonstration profiles, not registered or verified members.
-            Profile likes are temporary and stored only in this browser session.
+            These are demonstration profiles, not registered members.
+            Likes and saved profiles are temporary browser interactions.
           </p>
         </div>
       </section>
 
-      {/* CALL TO ACTION */}
-      <section className="py-16">
-        <div className="container">
-          <div className="rounded-[2rem] bg-rose-500 px-7 py-14 text-center text-white sm:px-14">
-            <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-full bg-white/20">
-              <CheckCircle2 size={30} />
-            </div>
+      {/* ABOUT */}
+      <section className="mx-auto max-w-7xl px-4 py-16 sm:px-6">
+        <div className="rounded-[2rem] border border-rose-100 bg-[#fff0f4] px-7 py-12 text-center sm:px-14">
+          <ShieldCheck className="mx-auto text-rose-500" size={38} />
 
-            <h2 className="mt-6 text-3xl font-black sm:text-4xl">
-              Your next chapter starts here.
-            </h2>
-
-            <p className="mx-auto mt-4 max-w-xl leading-7 text-rose-50">
-              Take the first step towards a connection built on honesty,
-              understanding and shared intentions.
-            </p>
-
-            <Link
-              href="/login"
-              className="mt-8 inline-flex items-center gap-2 rounded-full bg-white px-8 py-4 font-black text-rose-600 transition hover:bg-rose-50"
-            >
-              Get started
-              <ArrowRight size={18} />
-            </Link>
-          </div>
-        </div>
-      </section>
-
-      {/* JOIN */}
-      <section id="join" className="bg-white py-16">
-        <div className="container text-center">
-          <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-full bg-rose-100 text-rose-500">
-            <Users size={28} />
-          </div>
-
-          <h2 className="mt-5 text-3xl font-black">
-            Join Prominent Hearts
+          <h2 className="mt-5 font-serif text-3xl font-bold sm:text-4xl">
+            Meaningful connections begin with respect.
           </h2>
 
-          <p className="mx-auto mt-4 max-w-xl leading-7 text-gray-500">
-            Sign in or create your account to begin your journey.
-            Prominent Hearts is exclusively for adults aged 18 and above.
+          <p className="mx-auto mt-5 max-w-2xl leading-8 text-gray-600">
+            Prominent Hearts is a community for adults aged 18 and above
+            who want honest conversations, shared values and purposeful
+            relationships.
           </p>
 
           <Link
             href="/login"
-            className="primary-button mt-7 inline-flex"
+            className="mt-8 inline-flex items-center gap-3 rounded-full bg-rose-600 px-8 py-4 font-bold text-white hover:bg-rose-700"
           >
-            Continue with Google
-            <ArrowRight size={18} />
+            Create your profile
+            <ArrowRight size={19} />
           </Link>
         </div>
       </section>
 
       {/* FOOTER */}
-      <footer className="border-t border-rose-100 bg-[#fff8fa] py-10">
-        <div className="container flex flex-col items-center justify-between gap-6 text-center sm:flex-row sm:text-left">
-          <Link href="/" className="flex items-center gap-2 font-black">
-            <Heart
-              size={20}
-              fill="currentColor"
-              className="text-rose-500"
-            />
+      <footer className="border-t border-rose-100 bg-white px-4 py-10">
+        <div className="mx-auto flex max-w-7xl flex-col items-center justify-between gap-5 text-center sm:flex-row sm:text-left">
+          <Link href="/" className="flex items-center gap-2 font-serif text-xl font-bold">
+            <Heart size={22} fill="currentColor" className="text-rose-500" />
             Prominent Hearts
           </Link>
 
-          <div className="flex flex-wrap justify-center gap-5 text-sm font-semibold text-gray-500">
-            <Link href="/terms" className="hover:text-rose-500">
-              Terms of Use
-            </Link>
-
-            <Link
-              href="/marriage-agreement"
-              className="hover:text-rose-500"
-            >
-              Marriage Agreement
-            </Link>
-
-            <Link href="/login" className="hover:text-rose-500">
-              Log in
-            </Link>
+          <div className="flex flex-wrap justify-center gap-5 text-sm text-gray-500">
+            <Link href="/terms">Terms of Use</Link>
+            <Link href="/marriage-agreement">Marriage Agreement</Link>
+            <Link href="/login">Login</Link>
           </div>
 
           <p className="text-xs text-gray-400">
@@ -563,6 +503,32 @@ export default function HomePage() {
           </p>
         </div>
       </footer>
+
+      {/* FIXED FLOATING BOTTOM NAVIGATION */}
+      <nav
+        aria-label="Main member navigation"
+        className="fixed bottom-0 left-0 right-0 z-[100] border-t border-rose-100 bg-white/95 shadow-[0_-5px_25px_rgba(80,20,40,0.08)] backdrop-blur-md"
+      >
+        <div className="mx-auto grid max-w-xl grid-cols-4 px-2 py-2">
+          {navigation.map((item) => {
+            const Icon = item.icon;
+
+            return (
+              <Link
+                key={item.label}
+                href={item.href}
+                className="flex flex-col items-center justify-center gap-1 rounded-xl py-2 text-slate-400 transition hover:bg-rose-50 hover:text-rose-600"
+              >
+                <Icon size={24} strokeWidth={2} />
+
+                <span className="text-xs font-semibold">
+                  {item.label}
+                </span>
+              </Link>
+            );
+          })}
+        </div>
+      </nav>
     </main>
   );
 }
