@@ -9,7 +9,6 @@ import {
   X,
   ShieldCheck,
   MessageCircle,
-  Users,
   ArrowRight,
   Sparkles,
   Compass,
@@ -28,24 +27,24 @@ const navigation = [
 
 const intentions = [
   {
+    number: "01",
     title: "Marriage",
     description: "Find someone ready for a committed marriage.",
-    number: "01",
   },
   {
+    number: "02",
     title: "Contextual Marriage",
     description: "Explore marriage with clear, mutually agreed terms.",
-    number: "02",
   },
   {
+    number: "03",
     title: "Long-term Relationship",
     description: "Build a meaningful long-term connection.",
-    number: "03",
   },
   {
+    number: "04",
     title: "Get to Know Someone Intentionally",
     description: "Start with friendship and grow with purpose.",
-    number: "04",
   },
 ];
 
@@ -126,31 +125,31 @@ export default function HomePage() {
   }
 
   return (
-    <main className="min-h-screen overflow-x-hidden bg-[#fff8fa] pb-24 text-[#30202a]">
+    <main className="min-h-screen overflow-x-hidden bg-[#fff8fa] pb-28 text-[#30202a]">
 
       {/* HEADER */}
       <header className="sticky top-0 z-50 border-b border-rose-100 bg-white">
-        <div className="mx-auto flex h-[88px] max-w-7xl items-center justify-between px-4 sm:px-6">
+        <div className="mx-auto flex h-[76px] max-w-7xl items-center justify-between gap-2 px-3 sm:h-[88px] sm:px-6">
 
-          <Link href="/" className="flex items-center gap-3">
-            <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-gradient-to-br from-rose-600 to-pink-500 text-white">
-              <Heart size={28} fill="currentColor" />
+          <Link href="/" className="flex min-w-0 shrink items-center gap-2 sm:gap-3">
+            <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-2xl bg-gradient-to-br from-rose-600 to-pink-500 text-white sm:h-12 sm:w-12">
+              <Heart size={27} fill="currentColor" />
             </div>
 
-            <div>
-              <div className="font-serif text-xl font-bold tracking-tight sm:text-2xl">
+            <div className="min-w-0">
+              <div className="whitespace-nowrap font-serif text-[18px] font-bold leading-tight tracking-tight sm:text-2xl">
                 Prominent Hearts
               </div>
-              <div className="mt-1 text-[10px] font-bold tracking-[3px] text-rose-500 sm:text-xs">
+              <div className="mt-1 whitespace-nowrap text-[8px] font-bold tracking-[2px] text-rose-500 sm:text-xs sm:tracking-[3px]">
                 MEET WITH PURPOSE
               </div>
             </div>
           </Link>
 
-          <div className="flex items-center gap-3">
+          <div className="flex shrink-0 items-center gap-1 sm:gap-3">
             <Link
               href="/login"
-              className="rounded-full bg-rose-600 px-5 py-3 text-sm font-bold text-white transition hover:bg-rose-700 sm:px-7"
+              className="whitespace-nowrap rounded-full bg-rose-600 px-3 py-3 text-xs font-bold text-white transition hover:bg-rose-700 sm:px-7 sm:text-sm"
             >
               Join free
             </Link>
@@ -160,9 +159,9 @@ export default function HomePage() {
               aria-label={menuOpen ? "Close menu" : "Open menu"}
               aria-expanded={menuOpen}
               onClick={() => setMenuOpen(!menuOpen)}
-              className="rounded-xl p-2 text-slate-800 hover:bg-rose-50"
+              className="shrink-0 rounded-xl p-2 text-slate-800 hover:bg-rose-50"
             >
-              {menuOpen ? <X size={28} /> : <Menu size={28} />}
+              {menuOpen ? <X size={26} /> : <Menu size={26} />}
             </button>
           </div>
         </div>
@@ -177,7 +176,7 @@ export default function HomePage() {
               className="fixed inset-0 z-40 bg-black/20"
             />
 
-            <div className="absolute right-4 top-[78px] z-50 w-72 overflow-hidden rounded-2xl border border-rose-100 bg-white p-3 shadow-2xl">
+            <div className="absolute right-3 top-[70px] z-50 w-72 overflow-hidden rounded-2xl border border-rose-100 bg-white p-3 shadow-2xl sm:right-5 sm:top-[82px]">
               <div className="border-b border-rose-100 px-4 py-3">
                 <p className="font-bold">Prominent Hearts</p>
                 <p className="text-xs text-gray-500">
@@ -215,59 +214,83 @@ export default function HomePage() {
         )}
       </header>
 
-      {/* HERO SECTION */}
-      <section className="px-4 pt-8 sm:px-6 sm:pt-12">
-        <div className="relative mx-auto max-w-7xl overflow-hidden rounded-[2.5rem] bg-gradient-to-br from-[#651c3c] via-[#923456] to-[#c65377] px-6 py-10 text-white shadow-xl shadow-rose-200/50 sm:px-12 sm:py-14 lg:px-16 lg:py-16">
+      {/* HERO */}
+      <section className="px-3 pt-6 sm:px-6 sm:pt-12">
+        <div className="relative mx-auto max-w-7xl overflow-hidden rounded-[2.2rem] bg-gradient-to-br from-[#651c3c] via-[#923456] to-[#c65377] px-6 py-8 text-white shadow-xl shadow-rose-200/50 sm:rounded-[2.5rem] sm:px-12 sm:py-14 lg:px-16 lg:py-16">
 
           <div className="pointer-events-none absolute -right-16 -top-24 h-96 w-96 rounded-full border-[70px] border-white/5" />
+
           <div className="pointer-events-none absolute -right-24 top-0 h-80 w-80 rounded-full bg-white/5 blur-2xl" />
 
           <div className="relative max-w-3xl">
-            <div className="inline-flex items-center gap-3 rounded-full border border-white/25 bg-white/10 px-4 py-3 text-sm font-semibold backdrop-blur">
-              <Sparkles size={19} />
-              A better way to find your person
+            <div className="inline-flex max-w-full items-center gap-2 rounded-full border border-white/25 bg-white/10 px-3 py-3 text-xs font-semibold sm:gap-3 sm:px-4 sm:text-sm">
+              <Sparkles size={18} className="shrink-0" />
+              <span>A better way to find your person</span>
             </div>
 
-            <h1 className="mt-10 font-serif text-5xl font-bold leading-[1.12] tracking-tight sm:text-6xl lg:text-7xl">
+            <h1 className="mt-7 max-w-full font-serif text-[clamp(2rem,8.2vw,3.25rem)] font-bold leading-[1.08] tracking-[-0.035em] sm:mt-10 sm:text-6xl sm:leading-[1.12] sm:tracking-tight lg:text-7xl">
               Love with intention.
               <span className="mt-2 block text-rose-200">
                 Build a lifetime.
               </span>
             </h1>
 
-            <p className="mt-8 max-w-2xl text-lg leading-9 text-rose-50 sm:text-xl">
+            <p className="mt-5 max-w-2xl text-[16px] leading-[1.7] text-rose-50 sm:mt-8 sm:text-xl sm:leading-9">
               A community for adults who value meaningful connection,
               shared values and the possibility of marriage. Less noise.
               More purpose.
             </p>
 
+            {/* CREATE PROFILE BUTTON */}
             <Link
               href="/login"
-              className="mt-10 inline-flex items-center gap-3 rounded-full bg-white px-8 py-5 text-lg font-bold text-rose-700 transition hover:bg-rose-50"
+              style={{
+                display: "inline-flex",
+                alignItems: "center",
+                justifyContent: "center",
+                gap: "12px",
+                minHeight: "62px",
+                minWidth: "260px",
+                padding: "17px 28px",
+                marginTop: "28px",
+                borderRadius: "9999px",
+                backgroundColor: "#ffffff",
+                color: "#9f1239",
+                fontSize: "17px",
+                fontWeight: 800,
+                lineHeight: 1.4,
+                textDecoration: "none",
+                position: "relative",
+                zIndex: 5,
+                whiteSpace: "nowrap",
+              }}
             >
-              Create your profile
-              <ArrowRight size={21} />
+              <span style={{ color: "#9f1239", display: "inline-block" }}>
+                Create your profile
+              </span>
+              <ArrowRight size={22} color="#9f1239" />
             </Link>
           </div>
 
-          <div className="relative mt-14 grid grid-cols-3 gap-3 border-t border-white/20 pt-10 sm:gap-5">
-            <div className="rounded-3xl bg-white/10 p-4 backdrop-blur sm:p-6">
-              <p className="text-sm text-rose-100 sm:text-base">Purpose</p>
-              <p className="mt-2 text-base font-bold sm:text-xl">
+          {/* THREE HERO VALUES */}
+          <div className="relative mt-9 grid grid-cols-3 gap-2 border-t border-white/20 pt-7 sm:mt-14 sm:gap-5 sm:pt-10">
+            <div className="rounded-2xl bg-white/10 p-3 backdrop-blur sm:rounded-3xl sm:p-6">
+              <p className="text-xs text-rose-100 sm:text-base">Purpose</p>
+              <p className="mt-2 text-sm font-bold sm:text-xl">
                 Marriage first
               </p>
             </div>
 
-            <div className="rounded-3xl bg-white/10 p-4 backdrop-blur sm:p-6">
-              <p className="text-sm text-rose-100 sm:text-base">People</p>
-              <p className="mt-2 text-base font-bold sm:text-xl">
+            <div className="rounded-2xl bg-white/10 p-3 backdrop-blur sm:rounded-3xl sm:p-6">
+              <p className="text-xs text-rose-100 sm:text-base">People</p>
+              <p className="mt-2 text-sm font-bold sm:text-xl">
                 Values-led
               </p>
             </div>
 
-            <div className="rounded-3xl bg-white/10 p-4 backdrop-blur sm:p-6">
-              <p className="text-sm text-rose-100 sm:text-base">Safety</p>
-              <p className="mt-2 text-base font-bold sm:text-xl">
+            <div className="rounded-2xl bg-white/10 p-3 backdrop-blur sm:rounded-3xl sm:p-6">
+              <p className="text-xs text-rose-100 sm:text-base">Safety</p>
+              <p className="mt-2 text-sm font-bold sm:text-xl">
                 Respect always
               </p>
             </div>
@@ -276,8 +299,8 @@ export default function HomePage() {
       </section>
 
       {/* THOUGHTFUL CONNECTIONS */}
-      <section className="mx-auto max-w-7xl px-4 pb-8 pt-16 sm:px-6">
-        <p className="text-sm font-bold tracking-[4px] text-rose-500">
+      <section className="mx-auto max-w-7xl px-4 pb-8 pt-14 sm:px-6 sm:pt-16">
+        <p className="text-xs font-bold tracking-[3px] text-rose-500 sm:text-sm sm:tracking-[4px]">
           THOUGHTFUL CONNECTIONS
         </p>
 
@@ -321,23 +344,17 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* DISCOVER PROFILES */}
+      {/* SUGGESTED PROFILES */}
       <section className="bg-white py-14">
         <div className="mx-auto max-w-7xl px-4 sm:px-6">
-          <div className="mb-8 flex items-end justify-between gap-4">
-            <div>
-              <p className="text-sm font-bold tracking-[3px] text-rose-500">
-                DISCOVER
-              </p>
+          <div className="mb-8">
+            <p className="text-sm font-bold tracking-[3px] text-rose-500">
+              DISCOVER
+            </p>
 
-              <h2 className="mt-3 font-serif text-3xl font-bold sm:text-4xl">
-                Suggested profiles
-              </h2>
-            </div>
-
-            <span className="text-xs text-gray-400">
-              Sample profiles
-            </span>
+            <h2 className="mt-3 font-serif text-3xl font-bold sm:text-4xl">
+              Suggested profiles
+            </h2>
           </div>
 
           <div className="grid gap-7 sm:grid-cols-2 lg:grid-cols-3">
@@ -350,7 +367,6 @@ export default function HomePage() {
                   key={profile.name}
                   className="overflow-hidden rounded-[2rem] border border-rose-100 bg-white shadow-sm"
                 >
-                  {/* PROFILE IMAGE PLACEHOLDER */}
                   <div className={`relative flex h-64 items-center justify-center bg-gradient-to-br ${profile.color}`}>
                     <div className="flex h-36 w-36 items-center justify-center rounded-full border-[7px] border-white/80 bg-white/70 font-serif text-6xl text-slate-700">
                       {profile.initials}
@@ -367,7 +383,7 @@ export default function HomePage() {
 
                     <button
                       type="button"
-                      aria-label={saved ? "Remove saved profile" : "Save profile"}
+                      aria-label="Save profile"
                       onClick={() => toggleSave(profile.name)}
                       className="absolute bottom-5 right-5 flex h-12 w-12 items-center justify-center rounded-full bg-white text-slate-600 shadow-md"
                     >
@@ -453,13 +469,12 @@ export default function HomePage() {
           </div>
 
           <p className="mt-8 text-center text-xs leading-6 text-gray-400">
-            These are demonstration profiles, not registered members.
-            Likes and saved profiles are temporary browser interactions.
+            These are demonstration profiles and sample data, not registered members.
           </p>
         </div>
       </section>
 
-      {/* ABOUT */}
+      {/* SAFETY */}
       <section className="mx-auto max-w-7xl px-4 py-16 sm:px-6">
         <div className="rounded-[2rem] border border-rose-100 bg-[#fff0f4] px-7 py-12 text-center sm:px-14">
           <ShieldCheck className="mx-auto text-rose-500" size={38} />
@@ -478,7 +493,7 @@ export default function HomePage() {
             href="/login"
             className="mt-8 inline-flex items-center gap-3 rounded-full bg-rose-600 px-8 py-4 font-bold text-white hover:bg-rose-700"
           >
-            Create your profile
+            Join Prominent Hearts
             <ArrowRight size={19} />
           </Link>
         </div>
@@ -504,7 +519,7 @@ export default function HomePage() {
         </div>
       </footer>
 
-      {/* FIXED FLOATING BOTTOM NAVIGATION */}
+      {/* FLOATING BOTTOM NAVIGATION */}
       <nav
         aria-label="Main member navigation"
         className="fixed bottom-0 left-0 right-0 z-[100] border-t border-rose-100 bg-white/95 shadow-[0_-5px_25px_rgba(80,20,40,0.08)] backdrop-blur-md"
@@ -517,11 +532,10 @@ export default function HomePage() {
               <Link
                 key={item.label}
                 href={item.href}
-                className="flex flex-col items-center justify-center gap-1 rounded-xl py-2 text-slate-400 transition hover:bg-rose-50 hover:text-rose-600"
+                className="flex flex-col items-center justify-center gap-1 rounded-xl py-2 text-slate-500 transition hover:bg-rose-50 hover:text-rose-600"
               >
                 <Icon size={24} strokeWidth={2} />
-
-                <span className="text-xs font-semibold">
+                <span className="text-[11px] font-semibold sm:text-xs">
                   {item.label}
                 </span>
               </Link>
