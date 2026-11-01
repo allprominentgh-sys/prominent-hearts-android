@@ -37,10 +37,7 @@ export default function MarriageAgreementPage() {
   const [consentB, setConsentB] = useState(false);
   const [submitted, setSubmitted] = useState(false);
 
-  function update(
-    field: keyof typeof form,
-    value: string
-  ) {
+  function update(field: keyof typeof form, value: string) {
     setForm((current) => ({
       ...current,
       [field]: value,
@@ -69,7 +66,10 @@ export default function MarriageAgreementPage() {
             </span>
           </Link>
 
-          <Link href="/" className="flex items-center gap-2 text-sm font-semibold text-gray-500">
+          <Link
+            href="/"
+            className="flex items-center gap-2 text-sm font-semibold text-gray-500"
+          >
             <ArrowLeft size={17} />
             Back to home
           </Link>
@@ -102,7 +102,10 @@ export default function MarriageAgreementPage() {
             { icon: ShieldCheck, label: "Voluntary consent" },
             { icon: CalendarDays, label: "Defined review period" },
           ].map((item) => (
-            <div key={item.label} className="flex items-center gap-3 rounded-2xl border border-pink-100 bg-white p-4">
+            <div
+              key={item.label}
+              className="flex items-center gap-3 rounded-2xl border border-pink-100 bg-white p-4"
+            >
               <item.icon className="text-rose-500" />
               <span className="text-sm font-bold">{item.label}</span>
             </div>
@@ -288,7 +291,7 @@ export default function MarriageAgreementPage() {
 
               <p className="mt-4 text-sm leading-6 text-gray-500">
                 These are shared intentions only. Reproductive decisions
-                require individual consent, and children's rights and welfare
+                require individual consent, and children&apos;s rights and welfare
                 cannot be waived by this agreement.
               </p>
             </section>
