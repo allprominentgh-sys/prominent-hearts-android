@@ -1,0 +1,20 @@
+{
+  "expo": {
+    "name": "Prominent Hearts",
+    "slug": "prominent-hearts-android",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "userInterfaceStyle": "light",
+    "scheme": "prominenthearts",
+    "android": {
+      "package": "com.allprominentghana.prominenthearts",
+      "versionCode": 1
+    },
+    "plugins": [
+      "expo-router"
+    ],
+    "experiments": {
+      "typedRoutes": true
+    }
+  }
+}
