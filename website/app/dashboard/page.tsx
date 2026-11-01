@@ -50,8 +50,8 @@ const tabs: {
 
 export default function DashboardPage() {
   const router = useRouter();
-
   const [supabase] = useState(() => createClient());
+
   const [user, setUser] = useState<User | null>(null);
   const [profile, setProfile] = useState<Profile | null>(null);
   const [members, setMembers] = useState<Profile[]>([]);
@@ -105,6 +105,7 @@ export default function DashboardPage() {
 
       if (ownProfile) {
         setProfile(ownProfile);
+
         setForm({
           full_name: ownProfile.full_name || "",
           username: ownProfile.username || "",
@@ -115,6 +116,7 @@ export default function DashboardPage() {
         });
       } else {
         setEditing(true);
+
         setForm((current) => ({
           ...current,
           full_name:
@@ -195,11 +197,16 @@ export default function DashboardPage() {
       return;
     }
 
-    setProfile((current) => ({
+    // Corrected: each profile field is assigned only once.
+    setProfile({
       id: user.id,
-      avatar_path: current?.avatar_path || null,
-      ...values,
-    }));
+      full_name: values.full_name,
+      username: values.username,
+      location: values.location,
+      bio: values.bio,
+      relationship_intention: values.relationship_intention,
+      avatar_path: profile?.avatar_path || null,
+    });
 
     setEditing(false);
     setNotice("Your profile has been saved successfully.");
@@ -355,22 +362,14 @@ export default function DashboardPage() {
         <section className="mb-8 grid grid-cols-2 gap-3 sm:grid-cols-3">
           <div className="rounded-2xl border border-rose-100 bg-white p-4">
             <Compass className="text-rose-500" size={23} />
-            <p className="mt-3 text-2xl font-bold">
-              {members.length}
-            </p>
-            <p className="text-sm text-gray-500">
-              Discover profiles
-            </p>
+            <p className="mt-3 text-2xl font-bold">{members.length}</p>
+            <p className="text-sm text-gray-500">Discover profiles</p>
           </div>
 
           <div className="rounded-2xl border border-rose-100 bg-white p-4">
             <Heart className="text-rose-500" size={23} />
-            <p className="mt-3 text-2xl font-bold">
-              {likedIds.length}
-            </p>
-            <p className="text-sm text-gray-500">
-              Likes this session
-            </p>
+            <p className="mt-3 text-2xl font-bold">{likedIds.length}</p>
+            <p className="text-sm text-gray-500">Likes this session</p>
           </div>
 
           <div className="col-span-2 rounded-2xl border border-rose-100 bg-white p-4 sm:col-span-1">
@@ -518,9 +517,7 @@ export default function DashboardPage() {
             {likedIds.length === 0 && (
               <div className="mt-6 rounded-3xl border border-rose-100 bg-white p-10 text-center">
                 <Heart className="mx-auto text-rose-400" size={40} />
-                <h3 className="mt-4 text-xl font-bold">
-                  No likes yet
-                </h3>
+                <h3 className="mt-4 text-xl font-bold">No likes yet</h3>
                 <p className="mt-2 text-sm text-gray-500">
                   Visit Discover and like profiles that interest you.
                 </p>
