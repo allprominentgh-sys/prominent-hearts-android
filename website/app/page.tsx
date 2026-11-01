@@ -20,7 +20,7 @@ const intentions = [
   {
     title: "Marriage",
     description: "Find someone ready for a committed marriage.",
-    href: "#join",
+    href: "/login",
     number: "01",
   },
   {
@@ -32,13 +32,13 @@ const intentions = [
   {
     title: "Long-term Relationship",
     description: "Build a meaningful long-term connection.",
-    href: "#join",
+    href: "/login",
     number: "03",
   },
   {
     title: "Get to Know Someone Intentionally",
     description: "Start with friendship and grow with purpose.",
-    href: "#join",
+    href: "/login",
     number: "04",
   },
 ];
@@ -84,31 +84,49 @@ export default function HomePage() {
 
   return (
     <main className="min-h-screen overflow-hidden bg-[#fff8fa] text-[#34232b]">
+      {/* HEADER */}
       <header className="sticky top-0 z-50 border-b border-rose-100 bg-white/95 backdrop-blur">
         <div className="container flex h-20 items-center justify-between">
           <Link href="/" className="flex items-center gap-2">
             <div className="flex h-10 w-10 items-center justify-center rounded-full bg-rose-100">
-              <Heart size={22} fill="currentColor" className="text-rose-500" />
+              <Heart
+                size={22}
+                fill="currentColor"
+                className="text-rose-500"
+              />
             </div>
+
             <span className="text-xl font-black tracking-tight">
               Prominent <span className="text-rose-500">Hearts</span>
             </span>
           </Link>
 
           <nav className="hidden items-center gap-8 text-sm font-semibold text-gray-600 md:flex">
-            <a href="#about" className="hover:text-rose-500">About</a>
-            <a href="#intentions" className="hover:text-rose-500">Relationship intentions</a>
-            <a href="#discover" className="hover:text-rose-500">Discover</a>
-            <Link href="/terms" className="hover:text-rose-500">Terms</Link>
+            <a href="#about" className="hover:text-rose-500">
+              About
+            </a>
+            <a href="#intentions" className="hover:text-rose-500">
+              Relationship intentions
+            </a>
+            <a href="#discover" className="hover:text-rose-500">
+              Discover
+            </a>
+            <Link href="/terms" className="hover:text-rose-500">
+              Terms
+            </Link>
           </nav>
 
           <div className="hidden items-center gap-3 md:flex">
-            <a href="#join" className="text-sm font-bold text-rose-600">
+            <Link
+              href="/login"
+              className="text-sm font-bold text-rose-600"
+            >
               Log in
-            </a>
-            <a href="#join" className="primary-button">
+            </Link>
+
+            <Link href="/login" className="primary-button">
               Join Prominent Hearts
-            </a>
+            </Link>
           </div>
 
           <button
@@ -124,18 +142,43 @@ export default function HomePage() {
         {menuOpen && (
           <nav className="border-t border-rose-100 bg-white p-5 md:hidden">
             <div className="flex flex-col gap-5 font-semibold">
-              <a href="#about" onClick={() => setMenuOpen(false)}>About</a>
-              <a href="#intentions" onClick={() => setMenuOpen(false)}>Relationship intentions</a>
-              <a href="#discover" onClick={() => setMenuOpen(false)}>Discover</a>
-              <Link href="/terms" onClick={() => setMenuOpen(false)}>Terms of Use</Link>
-              <a href="#join" onClick={() => setMenuOpen(false)} className="primary-button">
-                Join Prominent Hearts
+              <a href="#about" onClick={() => setMenuOpen(false)}>
+                About
               </a>
+
+              <a href="#intentions" onClick={() => setMenuOpen(false)}>
+                Relationship intentions
+              </a>
+
+              <a href="#discover" onClick={() => setMenuOpen(false)}>
+                Discover
+              </a>
+
+              <Link href="/terms" onClick={() => setMenuOpen(false)}>
+                Terms of Use
+              </Link>
+
+              <Link
+                href="/login"
+                onClick={() => setMenuOpen(false)}
+                className="primary-button"
+              >
+                Join Prominent Hearts
+              </Link>
+
+              <Link
+                href="/login"
+                onClick={() => setMenuOpen(false)}
+                className="text-rose-600"
+              >
+                Log in
+              </Link>
             </div>
           </nav>
         )}
       </header>
 
+      {/* HERO */}
       <section className="relative">
         <div className="container grid min-h-[620px] items-center gap-12 py-16 md:grid-cols-2 md:py-24">
           <div>
@@ -146,7 +189,9 @@ export default function HomePage() {
 
             <h1 className="max-w-2xl text-5xl font-black leading-[1.1] tracking-tight sm:text-6xl lg:text-7xl">
               Your heart deserves
-              <span className="block text-rose-500">something real.</span>
+              <span className="block text-rose-500">
+                something real.
+              </span>
             </h1>
 
             <p className="mt-7 max-w-xl text-lg leading-8 text-gray-600">
@@ -156,10 +201,11 @@ export default function HomePage() {
             </p>
 
             <div className="mt-9 flex flex-col gap-4 sm:flex-row">
-              <a href="#join" className="primary-button gap-2">
+              <Link href="/login" className="primary-button gap-2">
                 Find your connection
                 <ArrowRight size={18} />
-              </a>
+              </Link>
+
               <a
                 href="#intentions"
                 className="inline-flex items-center justify-center rounded-full border border-rose-200 bg-white px-7 py-3 font-bold text-rose-600 transition hover:bg-rose-50"
@@ -173,6 +219,7 @@ export default function HomePage() {
                 <ShieldCheck size={18} className="text-rose-500" />
                 Adults 18+
               </span>
+
               <span className="flex items-center gap-2">
                 <Heart size={18} className="text-rose-500" />
                 Purposeful connections
@@ -187,9 +234,14 @@ export default function HomePage() {
             <div className="relative rounded-[2rem] border border-rose-100 bg-white p-5 shadow-xl shadow-rose-100/60 sm:p-8">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-sm font-bold text-rose-500">Your journey</p>
-                  <h2 className="mt-1 text-2xl font-black">Starts with intention</h2>
+                  <p className="text-sm font-bold text-rose-500">
+                    Your journey
+                  </p>
+                  <h2 className="mt-1 text-2xl font-black">
+                    Starts with intention
+                  </h2>
                 </div>
+
                 <div className="rounded-2xl bg-rose-100 p-3 text-rose-500">
                   <Heart size={27} fill="currentColor" />
                 </div>
@@ -205,13 +257,21 @@ export default function HomePage() {
                     <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-rose-100 text-sm font-black text-rose-600">
                       {item.number}
                     </span>
+
                     <span className="min-w-0 flex-1">
-                      <span className="block font-bold">{item.title}</span>
+                      <span className="block font-bold">
+                        {item.title}
+                      </span>
+
                       <span className="mt-1 block text-sm leading-5 text-gray-500">
                         {item.description}
                       </span>
                     </span>
-                    <ArrowRight size={18} className="shrink-0 text-rose-400" />
+
+                    <ArrowRight
+                      size={18}
+                      className="shrink-0 text-rose-400"
+                    />
                   </Link>
                 ))}
               </div>
@@ -224,15 +284,18 @@ export default function HomePage() {
         </div>
       </section>
 
+      {/* ABOUT */}
       <section id="about" className="border-y border-rose-100 bg-white py-16">
         <div className="container">
           <div className="mx-auto max-w-3xl text-center">
             <p className="text-sm font-bold uppercase tracking-[3px] text-rose-500">
               About Prominent Hearts
             </p>
+
             <h2 className="mt-4 text-3xl font-black sm:text-4xl">
               Beyond ordinary dating
             </h2>
+
             <p className="mt-5 leading-8 text-gray-500">
               We believe relationships should begin with honesty, respect
               and a clear understanding of what both people want.
@@ -244,7 +307,9 @@ export default function HomePage() {
           <div className="mt-12 grid gap-6 md:grid-cols-3">
             <div className="rounded-3xl bg-[#fff8fa] p-7">
               <Heart size={30} className="text-rose-500" />
-              <h3 className="mt-5 text-xl font-black">Genuine intentions</h3>
+              <h3 className="mt-5 text-xl font-black">
+                Genuine intentions
+              </h3>
               <p className="mt-3 leading-7 text-gray-500">
                 Be clear about the kind of relationship you want to build.
               </p>
@@ -252,7 +317,9 @@ export default function HomePage() {
 
             <div className="rounded-3xl bg-[#fff8fa] p-7">
               <ShieldCheck size={30} className="text-rose-500" />
-              <h3 className="mt-5 text-xl font-black">Respect and safety</h3>
+              <h3 className="mt-5 text-xl font-black">
+                Respect and safety
+              </h3>
               <p className="mt-3 leading-7 text-gray-500">
                 A community built around adult participation and respectful conduct.
               </p>
@@ -260,7 +327,9 @@ export default function HomePage() {
 
             <div className="rounded-3xl bg-[#fff8fa] p-7">
               <MessageCircle size={30} className="text-rose-500" />
-              <h3 className="mt-5 text-xl font-black">Meaningful conversations</h3>
+              <h3 className="mt-5 text-xl font-black">
+                Meaningful conversations
+              </h3>
               <p className="mt-3 leading-7 text-gray-500">
                 Get to know people through honest communication and shared goals.
               </p>
@@ -269,15 +338,18 @@ export default function HomePage() {
         </div>
       </section>
 
+      {/* RELATIONSHIP INTENTIONS */}
       <section id="intentions" className="py-20">
         <div className="container">
           <div className="mx-auto max-w-2xl text-center">
             <p className="text-sm font-bold uppercase tracking-[3px] text-rose-500">
               Your relationship journey
             </p>
+
             <h2 className="mt-4 text-3xl font-black sm:text-4xl">
               What are you looking for?
             </h2>
+
             <p className="mt-4 leading-7 text-gray-500">
               There is no need to follow someone else&apos;s path.
               Choose the intention that reflects yours.
@@ -295,12 +367,18 @@ export default function HomePage() {
                   <span className="text-sm font-black text-rose-400">
                     {item.number}
                   </span>
+
                   <ArrowRight className="text-rose-400 transition group-hover:translate-x-1" />
                 </div>
-                <h3 className="mt-7 text-xl font-black">{item.title}</h3>
+
+                <h3 className="mt-7 text-xl font-black">
+                  {item.title}
+                </h3>
+
                 <p className="mt-3 leading-7 text-gray-500">
                   {item.description}
                 </p>
+
                 <span className="mt-6 inline-flex items-center gap-2 text-sm font-bold text-rose-600">
                   Explore this intention
                   <ArrowRight size={16} />
@@ -311,6 +389,7 @@ export default function HomePage() {
         </div>
       </section>
 
+      {/* DISCOVER */}
       <section id="discover" className="bg-white py-20">
         <div className="container">
           <div className="flex flex-col justify-between gap-5 sm:flex-row sm:items-end">
@@ -318,13 +397,16 @@ export default function HomePage() {
               <p className="text-sm font-bold uppercase tracking-[3px] text-rose-500">
                 Discover
               </p>
+
               <h2 className="mt-3 text-3xl font-black sm:text-4xl">
                 Meet our community
               </h2>
+
               <p className="mt-3 text-gray-500">
                 Sample profiles showing how member discovery can look.
               </p>
             </div>
+
             <span className="text-xs font-semibold text-gray-400">
               Demonstration profiles only
             </span>
@@ -340,7 +422,9 @@ export default function HomePage() {
                   className="overflow-hidden rounded-3xl border border-rose-100 bg-[#fff8fa]"
                 >
                   <div className="flex h-52 items-center justify-center bg-gradient-to-br from-rose-100 to-pink-50">
-                    <div className={`flex h-28 w-28 items-center justify-center rounded-full text-5xl font-black shadow-sm ${profile.color}`}>
+                    <div
+                      className={`flex h-28 w-28 items-center justify-center rounded-full text-5xl font-black shadow-sm ${profile.color}`}
+                    >
                       {profile.initials}
                     </div>
                   </div>
@@ -350,6 +434,7 @@ export default function HomePage() {
                       <h3 className="text-xl font-black">
                         {profile.name}, {profile.age}
                       </h3>
+
                       <UserRound className="text-rose-400" />
                     </div>
 
@@ -370,7 +455,11 @@ export default function HomePage() {
                           : "border-rose-200 bg-white text-rose-600 hover:bg-rose-50"
                       }`}
                     >
-                      <Heart size={17} fill={liked ? "currentColor" : "none"} />
+                      <Heart
+                        size={17}
+                        fill={liked ? "currentColor" : "none"}
+                      />
+
                       {liked ? "Liked" : "Like profile"}
                     </button>
                   </div>
@@ -386,58 +475,87 @@ export default function HomePage() {
         </div>
       </section>
 
+      {/* CALL TO ACTION */}
       <section className="py-16">
         <div className="container">
           <div className="rounded-[2rem] bg-rose-500 px-7 py-14 text-center text-white sm:px-14">
             <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-full bg-white/20">
               <CheckCircle2 size={30} />
             </div>
+
             <h2 className="mt-6 text-3xl font-black sm:text-4xl">
               Your next chapter starts here.
             </h2>
+
             <p className="mx-auto mt-4 max-w-xl leading-7 text-rose-50">
               Take the first step towards a connection built on honesty,
               understanding and shared intentions.
             </p>
-            <a
-              href="#join"
+
+            <Link
+              href="/login"
               className="mt-8 inline-flex items-center gap-2 rounded-full bg-white px-8 py-4 font-black text-rose-600 transition hover:bg-rose-50"
             >
               Get started
               <ArrowRight size={18} />
-            </a>
+            </Link>
           </div>
         </div>
       </section>
 
+      {/* JOIN */}
       <section id="join" className="bg-white py-16">
         <div className="container text-center">
           <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-full bg-rose-100 text-rose-500">
             <Users size={28} />
           </div>
+
           <h2 className="mt-5 text-3xl font-black">
             Join Prominent Hearts
           </h2>
+
           <p className="mx-auto mt-4 max-w-xl leading-7 text-gray-500">
-            Registration and member authentication are being prepared.
-            The demonstration homepage is not yet accepting real member accounts.
+            Sign in or create your account to begin your journey.
+            Prominent Hearts is exclusively for adults aged 18 and above.
           </p>
-          <p className="mt-5 text-sm font-bold text-rose-600">
-            Coming soon
-          </p>
+
+          <Link
+            href="/login"
+            className="primary-button mt-7 inline-flex"
+          >
+            Continue with Google
+            <ArrowRight size={18} />
+          </Link>
         </div>
       </section>
 
+      {/* FOOTER */}
       <footer className="border-t border-rose-100 bg-[#fff8fa] py-10">
         <div className="container flex flex-col items-center justify-between gap-6 text-center sm:flex-row sm:text-left">
           <Link href="/" className="flex items-center gap-2 font-black">
-            <Heart size={20} fill="currentColor" className="text-rose-500" />
+            <Heart
+              size={20}
+              fill="currentColor"
+              className="text-rose-500"
+            />
             Prominent Hearts
           </Link>
 
           <div className="flex flex-wrap justify-center gap-5 text-sm font-semibold text-gray-500">
-            <Link href="/terms" className="hover:text-rose-500">Terms of Use</Link>
-            <Link href="/marriage-agreement" className="hover:text-rose-500">Marriage Agreement</Link>
+            <Link href="/terms" className="hover:text-rose-500">
+              Terms of Use
+            </Link>
+
+            <Link
+              href="/marriage-agreement"
+              className="hover:text-rose-500"
+            >
+              Marriage Agreement
+            </Link>
+
+            <Link href="/login" className="hover:text-rose-500">
+              Log in
+            </Link>
           </div>
 
           <p className="text-xs text-gray-400">
