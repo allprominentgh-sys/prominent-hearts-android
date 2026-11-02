@@ -1,7 +1,9 @@
+
 {
   "expo": {
     "name": "Prominent Hearts",
     "slug": "prominent-hearts-android",
+    "owner": "prominentheartss-team",
     "version": "1.0.0",
     "orientation": "portrait",
     "userInterfaceStyle": "light",
@@ -15,6 +17,11 @@
     ],
     "experiments": {
       "typedRoutes": true
+    },
+    "extra": {
+      "eas": {
+        "projectId": "308d63a4-5e57-4169-a14e-b4a689f34eee"
+      }
     }
   }
 }
