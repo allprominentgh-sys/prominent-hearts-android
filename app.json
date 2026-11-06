@@ -10,7 +10,8 @@
     "scheme": "prominenthearts",
     "android": {
       "package": "com.allprominentghana.prominenthearts",
-      "versionCode": 1
+      "versionCode": 1,
+      "googleServicesFile": "./google-services.json"
     },
     "plugins": [
       "expo-router"
