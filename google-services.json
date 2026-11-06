@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "1081312006522",
+    "project_id": "ph-match",
+    "storage_bucket": "ph-match.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1081312006522:android:b3154834b76266760506c3",
+        "android_client_info": {
+          "package_name": "com.allprominentghana.prominenthearts"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "1081312006522-ufcn78612pb0635c6dcfa8evm5pmitlk.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyD3whGzETqwIJ3am5NZNks8XS6DLq0bQt0"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "1081312006522-ufcn78612pb0635c6dcfa8evm5pmitlk.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
