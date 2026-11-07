@@ -52,7 +52,6 @@ type Profile = {
   relationship_intention: string;
   photoURL: string;
   isActive: boolean;
-  likedUserIds: string[];
 };
 
 type Tab = "discover" | "likes" | "messages" | "profile";
@@ -64,7 +63,7 @@ const tabs = [
   { id: "profile" as Tab, label: "My Profile", icon: UserRound },
 ];
 
-const emptyProfile = (): Omit<Profile, "id"> => ({
+const emptyProfile = {
   full_name: "",
   username: "",
   location: "",
@@ -72,8 +71,7 @@ const emptyProfile = (): Omit<Profile, "id"> => ({
   relationship_intention: "Marriage",
   photoURL: "",
   isActive: true,
-  likedUserIds: [],
-});
+};
 
 export default function DashboardPage() {
   const router = useRouter();
@@ -114,31 +112,31 @@ export default function DashboardPage() {
 
       try {
         const profileRef = doc(db, "profiles", firebaseUser.uid);
-        const profileSnapshot = await getDoc(profileRef);
+        const privateRef = doc(db, "privateUsers", firebaseUser.uid);
+
+        const [profileSnapshot, privateSnapshot] = await Promise.all([
+          getDoc(profileRef),
+          getDoc(privateRef),
+        ]);
 
         let currentProfile: Profile;
 
         if (!profileSnapshot.exists()) {
-          const newProfile = {
-            ...emptyProfile(),
+          currentProfile = {
+            id: firebaseUser.uid,
+            ...emptyProfile,
             full_name:
               firebaseUser.displayName ||
               firebaseUser.email?.split("@")[0] ||
               "",
             photoURL: firebaseUser.photoURL || "",
-            email: firebaseUser.email || "",
+          };
+
+          await setDoc(profileRef, {
+            ...currentProfile,
             createdAt: serverTimestamp(),
             updatedAt: serverTimestamp(),
-          };
-
-          await setDoc(profileRef, newProfile);
-
-          currentProfile = {
-            id: firebaseUser.uid,
-            ...emptyProfile(),
-            full_name: newProfile.full_name,
-            photoURL: newProfile.photoURL,
-          };
+          });
 
           setEditing(true);
         } else {
@@ -152,18 +150,32 @@ export default function DashboardPage() {
             bio: saved.bio || "",
             relationship_intention:
               saved.relationship_intention || "Marriage",
-            photoURL: saved.photoURL || firebaseUser.photoURL || "",
+            photoURL: saved.photoURL || "",
             isActive: saved.isActive !== false,
-            likedUserIds: Array.isArray(saved.likedUserIds)
-              ? saved.likedUserIds
-              : [],
           };
+        }
+
+        let privateLikes: string[] = [];
+
+        if (!privateSnapshot.exists()) {
+          await setDoc(privateRef, {
+            email: firebaseUser.email || "",
+            likedUserIds: [],
+            createdAt: serverTimestamp(),
+            updatedAt: serverTimestamp(),
+          });
+        } else {
+          const privateData = privateSnapshot.data();
+
+          privateLikes = Array.isArray(privateData.likedUserIds)
+            ? privateData.likedUserIds
+            : [];
         }
 
         if (!mounted) return;
 
         setProfile(currentProfile);
-        setLikedIds(currentProfile.likedUserIds);
+        setLikedIds(privateLikes);
 
         setForm({
           full_name: currentProfile.full_name,
@@ -198,9 +210,6 @@ export default function DashboardPage() {
                 data.relationship_intention || "",
               photoURL: data.photoURL || "",
               isActive: data.isActive !== false,
-              likedUserIds: Array.isArray(data.likedUserIds)
-                ? data.likedUserIds
-                : [],
             };
           })
           .filter((member) => member.isActive);
@@ -252,8 +261,7 @@ export default function DashboardPage() {
       location: form.location.trim(),
       bio: form.bio.trim(),
       relationship_intention: form.relationship_intention,
-      photoURL: user.photoURL || "",
-      email: user.email || "",
+      photoURL: user.photoURL || profile?.photoURL || "",
       isActive: true,
       updatedAt: serverTimestamp(),
     };
@@ -262,6 +270,15 @@ export default function DashboardPage() {
       await setDoc(
         doc(db, "profiles", user.uid),
         values,
+        { merge: true }
+      );
+
+      await setDoc(
+        doc(db, "privateUsers", user.uid),
+        {
+          email: user.email || "",
+          updatedAt: serverTimestamp(),
+        },
         { merge: true }
       );
 
@@ -274,7 +291,6 @@ export default function DashboardPage() {
         relationship_intention: values.relationship_intention,
         photoURL: values.photoURL,
         isActive: true,
-        likedUserIds: likedIds,
       };
 
       setProfile(updatedProfile);
@@ -297,7 +313,7 @@ export default function DashboardPage() {
       await signOut(auth);
       router.replace("/login");
       router.refresh();
-    } catch (err) {
+    } catch {
       setError("Unable to sign out. Please try again.");
     }
   }
@@ -308,9 +324,9 @@ export default function DashboardPage() {
     const alreadyLiked = likedIds.includes(memberId);
 
     try {
-      const profileRef = doc(db, "profiles", user.uid);
+      const privateRef = doc(db, "privateUsers", user.uid);
 
-      await updateDoc(profileRef, {
+      await updateDoc(privateRef, {
         likedUserIds: alreadyLiked
           ? arrayRemove(memberId)
           : arrayUnion(memberId),
@@ -356,7 +372,6 @@ export default function DashboardPage() {
   const displayName =
     profile?.full_name ||
     user.displayName ||
-    user.email ||
     "Member";
 
   return (
