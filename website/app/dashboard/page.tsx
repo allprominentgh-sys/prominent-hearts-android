@@ -2,9 +2,26 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import type { User } from "@supabase/supabase-js";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
+import {
+  onAuthStateChanged,
+  signOut,
+  type User,
+} from "firebase/auth";
+import {
+  collection,
+  doc,
+  getDoc,
+  getDocs,
+  setDoc,
+  updateDoc,
+  arrayUnion,
+  arrayRemove,
+  query,
+  limit,
+  serverTimestamp,
+} from "firebase/firestore";
 import {
   Heart,
   Compass,
@@ -23,39 +40,49 @@ import {
   ArrowLeft,
   Sparkles,
 } from "lucide-react";
-import { createClient } from "../../lib/supabase/browser";
+
+import { auth, db } from "../../lib/firebase";
 
 type Profile = {
   id: string;
-  username: string | null;
-  full_name: string | null;
-  location: string | null;
-  bio: string | null;
-  relationship_intention: string | null;
-  avatar_path: string | null;
+  full_name: string;
+  username: string;
+  location: string;
+  bio: string;
+  relationship_intention: string;
+  photoURL: string;
+  isActive: boolean;
+  likedUserIds: string[];
 };
 
 type Tab = "discover" | "likes" | "messages" | "profile";
 
-const tabs: {
-  id: Tab;
-  label: string;
-  icon: typeof Compass;
-}[] = [
-  { id: "discover", label: "Discover", icon: Compass },
-  { id: "likes", label: "Likes", icon: Heart },
-  { id: "messages", label: "Messages", icon: MessageCircle },
-  { id: "profile", label: "My Profile", icon: UserRound },
+const tabs = [
+  { id: "discover" as Tab, label: "Discover", icon: Compass },
+  { id: "likes" as Tab, label: "Likes", icon: Heart },
+  { id: "messages" as Tab, label: "Messages", icon: MessageCircle },
+  { id: "profile" as Tab, label: "My Profile", icon: UserRound },
 ];
+
+const emptyProfile = (): Omit<Profile, "id"> => ({
+  full_name: "",
+  username: "",
+  location: "",
+  bio: "",
+  relationship_intention: "Marriage",
+  photoURL: "",
+  isActive: true,
+  likedUserIds: [],
+});
 
 export default function DashboardPage() {
   const router = useRouter();
-  const [supabase] = useState(() => createClient());
 
   const [user, setUser] = useState<User | null>(null);
   const [profile, setProfile] = useState<Profile | null>(null);
   const [members, setMembers] = useState<Profile[]>([]);
   const [likedIds, setLikedIds] = useState<string[]>([]);
+
   const [activeTab, setActiveTab] = useState<Tab>("discover");
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
@@ -75,90 +102,133 @@ export default function DashboardPage() {
   useEffect(() => {
     let mounted = true;
 
-    async function loadDashboard() {
-      const { data, error: authError } =
-        await supabase.auth.getUser();
-
+    const unsubscribe = onAuthStateChanged(auth, async (firebaseUser) => {
       if (!mounted) return;
 
-      if (authError || !data.user) {
+      if (!firebaseUser) {
         router.replace("/login");
         return;
       }
 
-      setUser(data.user);
+      setUser(firebaseUser);
 
-      const { data: ownProfile, error: profileError } =
-        await supabase
-          .from("profiles")
-          .select(
-            "id, username, full_name, location, bio, relationship_intention, avatar_path"
-          )
-          .eq("id", data.user.id)
-          .maybeSingle();
+      try {
+        const profileRef = doc(db, "profiles", firebaseUser.uid);
+        const profileSnapshot = await getDoc(profileRef);
 
-      if (!mounted) return;
+        let currentProfile: Profile;
 
-      if (profileError) {
-        setError(profileError.message);
-      }
+        if (!profileSnapshot.exists()) {
+          const newProfile = {
+            ...emptyProfile(),
+            full_name:
+              firebaseUser.displayName ||
+              firebaseUser.email?.split("@")[0] ||
+              "",
+            photoURL: firebaseUser.photoURL || "",
+            email: firebaseUser.email || "",
+            createdAt: serverTimestamp(),
+            updatedAt: serverTimestamp(),
+          };
 
-      if (ownProfile) {
-        setProfile(ownProfile);
+          await setDoc(profileRef, newProfile);
+
+          currentProfile = {
+            id: firebaseUser.uid,
+            ...emptyProfile(),
+            full_name: newProfile.full_name,
+            photoURL: newProfile.photoURL,
+          };
+
+          setEditing(true);
+        } else {
+          const saved = profileSnapshot.data();
+
+          currentProfile = {
+            id: firebaseUser.uid,
+            full_name: saved.full_name || "",
+            username: saved.username || "",
+            location: saved.location || "",
+            bio: saved.bio || "",
+            relationship_intention:
+              saved.relationship_intention || "Marriage",
+            photoURL: saved.photoURL || firebaseUser.photoURL || "",
+            isActive: saved.isActive !== false,
+            likedUserIds: Array.isArray(saved.likedUserIds)
+              ? saved.likedUserIds
+              : [],
+          };
+        }
+
+        if (!mounted) return;
+
+        setProfile(currentProfile);
+        setLikedIds(currentProfile.likedUserIds);
 
         setForm({
-          full_name: ownProfile.full_name || "",
-          username: ownProfile.username || "",
-          location: ownProfile.location || "",
-          bio: ownProfile.bio || "",
+          full_name: currentProfile.full_name,
+          username: currentProfile.username,
+          location: currentProfile.location,
+          bio: currentProfile.bio,
           relationship_intention:
-            ownProfile.relationship_intention || "Marriage",
+            currentProfile.relationship_intention,
         });
-      } else {
-        setEditing(true);
 
-        setForm((current) => ({
-          ...current,
-          full_name:
-            data.user.user_metadata?.full_name ||
-            data.user.user_metadata?.name ||
-            "",
-        }));
+        const profilesQuery = query(
+          collection(db, "profiles"),
+          limit(31)
+        );
+
+        const membersSnapshot = await getDocs(profilesQuery);
+
+        if (!mounted) return;
+
+        const otherMembers = membersSnapshot.docs
+          .filter((item) => item.id !== firebaseUser.uid)
+          .map((item) => {
+            const data = item.data();
+
+            return {
+              id: item.id,
+              full_name: data.full_name || "",
+              username: data.username || "",
+              location: data.location || "",
+              bio: data.bio || "",
+              relationship_intention:
+                data.relationship_intention || "",
+              photoURL: data.photoURL || "",
+              isActive: data.isActive !== false,
+              likedUserIds: Array.isArray(data.likedUserIds)
+                ? data.likedUserIds
+                : [],
+            };
+          })
+          .filter((member) => member.isActive);
+
+        setMembers(otherMembers);
+      } catch (err) {
+        console.error("Dashboard loading error:", err);
+        setError(
+          err instanceof Error
+            ? err.message
+            : "Unable to load your account. Please try again."
+        );
+      } finally {
+        if (mounted) setLoading(false);
       }
-
-      const { data: otherMembers, error: membersError } =
-        await supabase
-          .from("profiles")
-          .select(
-            "id, username, full_name, location, bio, relationship_intention, avatar_path"
-          )
-          .eq("is_active", true)
-          .neq("id", data.user.id)
-          .limit(30);
-
-      if (!mounted) return;
-
-      if (membersError) {
-        setError(membersError.message);
-      } else {
-        setMembers(otherMembers || []);
-      }
-
-      setLoading(false);
-    }
-
-    loadDashboard();
+    });
 
     return () => {
       mounted = false;
+      unsubscribe();
     };
-  }, [router, supabase]);
+  }, [router]);
 
   async function saveProfile() {
     if (!user) return;
 
     if (!form.full_name.trim()) {
-      setError("Please enter your name.");
+      setError("Please enter your full name.");
       return;
     }
 
@@ -177,53 +247,85 @@ export default function DashboardPage() {
     setNotice("");
 
     const values = {
-      id: user.id,
       full_name: form.full_name.trim(),
-      username: form.username.trim() || null,
-      location: form.location.trim() || null,
-      bio: form.bio.trim() || null,
+      username: form.username.trim(),
+      location: form.location.trim(),
+      bio: form.bio.trim(),
       relationship_intention: form.relationship_intention,
-      updated_at: new Date().toISOString(),
+      photoURL: user.photoURL || "",
+      email: user.email || "",
+      isActive: true,
+      updatedAt: serverTimestamp(),
     };
 
-    const { error: saveError } = await supabase
-      .from("profiles")
-      .upsert(values, { onConflict: "id" });
+    try {
+      await setDoc(
+        doc(db, "profiles", user.uid),
+        values,
+        { merge: true }
+      );
 
-    setSaving(false);
+      const updatedProfile: Profile = {
+        id: user.uid,
+        full_name: values.full_name,
+        username: values.username,
+        location: values.location,
+        bio: values.bio,
+        relationship_intention: values.relationship_intention,
+        photoURL: values.photoURL,
+        isActive: true,
+        likedUserIds: likedIds,
+      };
 
-    if (saveError) {
-      setError(saveError.message);
-      return;
+      setProfile(updatedProfile);
+      setEditing(false);
+      setNotice("Your profile has been saved successfully.");
+    } catch (err) {
+      console.error("Profile save error:", err);
+      setError(
+        err instanceof Error
+          ? err.message
+          : "We could not save your profile."
+      );
+    } finally {
+      setSaving(false);
     }
-
-    // Corrected: each profile field is assigned only once.
-    setProfile({
-      id: user.id,
-      full_name: values.full_name,
-      username: values.username,
-      location: values.location,
-      bio: values.bio,
-      relationship_intention: values.relationship_intention,
-      avatar_path: profile?.avatar_path || null,
-    });
-
-    setEditing(false);
-    setNotice("Your profile has been saved successfully.");
   }
 
-  async function signOut() {
-    await supabase.auth.signOut();
-    router.replace("/");
-    router.refresh();
+  async function handleSignOut() {
+    try {
+      await signOut(auth);
+      router.replace("/login");
+      router.refresh();
+    } catch (err) {
+      setError("Unable to sign out. Please try again.");
+    }
   }
 
-  function toggleLike(memberId: string) {
-    setLikedIds((current) =>
-      current.includes(memberId)
-        ? current.filter((id) => id !== memberId)
-        : [...current, memberId]
-    );
+  async function toggleLike(memberId: string) {
+    if (!user) return;
+
+    const alreadyLiked = likedIds.includes(memberId);
+
+    try {
+      const profileRef = doc(db, "profiles", user.uid);
+
+      await updateDoc(profileRef, {
+        likedUserIds: alreadyLiked
+          ? arrayRemove(memberId)
+          : arrayUnion(memberId),
+        updatedAt: serverTimestamp(),
+      });
+
+      setLikedIds((current) =>
+        alreadyLiked
+          ? current.filter((id) => id !== memberId)
+          : [...current, memberId]
+      );
+    } catch (err) {
+      console.error("Like error:", err);
+      setError("Unable to update your likes. Please try again.");
+    }
   }
 
   function changeTab(tab: Tab) {
@@ -249,10 +351,12 @@ export default function DashboardPage() {
     );
   }
 
+  if (!user) return null;
+
   const displayName =
     profile?.full_name ||
-    user?.user_metadata?.full_name ||
-    user?.user_metadata?.name ||
+    user.displayName ||
+    user.email ||
     "Member";
 
   return (
@@ -265,8 +369,7 @@ export default function DashboardPage() {
             </span>
 
             <span className="font-serif text-xl font-bold">
-              Prominent{" "}
-              <span className="text-rose-600">Hearts</span>
+              Prominent <span className="text-rose-600">Hearts</span>
             </span>
           </Link>
 
@@ -296,7 +399,7 @@ export default function DashboardPage() {
             <div className="border-b border-rose-100 px-3 py-3">
               <p className="font-bold">{displayName}</p>
               <p className="truncate text-xs text-gray-500">
-                {user?.email}
+                {user.email}
               </p>
             </div>
 
@@ -311,7 +414,7 @@ export default function DashboardPage() {
 
             <button
               type="button"
-              onClick={signOut}
+              onClick={handleSignOut}
               className="flex w-full items-center gap-3 rounded-xl px-3 py-3 text-left text-red-600 hover:bg-red-50"
             >
               <LogOut size={19} />
@@ -369,7 +472,7 @@ export default function DashboardPage() {
           <div className="rounded-2xl border border-rose-100 bg-white p-4">
             <Heart className="text-rose-500" size={23} />
             <p className="mt-3 text-2xl font-bold">{likedIds.length}</p>
-            <p className="text-sm text-gray-500">Likes this session</p>
+            <p className="text-sm text-gray-500">Profiles you like</p>
           </div>
 
           <div className="col-span-2 rounded-2xl border border-rose-100 bg-white p-4 sm:col-span-1">
@@ -421,11 +524,19 @@ export default function DashboardPage() {
                       className="overflow-hidden rounded-3xl border border-rose-100 bg-white shadow-sm"
                     >
                       <div className="flex h-44 items-center justify-center bg-gradient-to-br from-rose-200 to-orange-100">
-                        <div className="flex h-24 w-24 items-center justify-center rounded-full border-4 border-white bg-white/80 font-serif text-5xl text-slate-700">
-                          {(member.full_name || "M")
-                            .charAt(0)
-                            .toUpperCase()}
-                        </div>
+                        {member.photoURL ? (
+                          <img
+                            src={member.photoURL}
+                            alt={member.full_name || "Member"}
+                            className="h-full w-full object-cover"
+                          />
+                        ) : (
+                          <div className="flex h-24 w-24 items-center justify-center rounded-full border-4 border-white bg-white/80 font-serif text-5xl text-slate-700">
+                            {(member.full_name || "M")
+                              .charAt(0)
+                              .toUpperCase()}
+                          </div>
+                        )}
                       </div>
 
                       <div className="p-5">
@@ -581,16 +692,24 @@ export default function DashboardPage() {
 
             <div className="overflow-hidden rounded-3xl border border-rose-100 bg-white">
               <div className="flex flex-col items-center bg-gradient-to-br from-[#651c3c] to-[#c65377] px-6 py-10 text-white">
-                <div className="flex h-28 w-28 items-center justify-center rounded-full border-4 border-white/80 bg-white/20 font-serif text-5xl">
-                  {displayName.charAt(0).toUpperCase()}
-                </div>
+                {profile?.photoURL ? (
+                  <img
+                    src={profile.photoURL}
+                    alt={displayName}
+                    className="h-28 w-28 rounded-full border-4 border-white/80 object-cover"
+                  />
+                ) : (
+                  <div className="flex h-28 w-28 items-center justify-center rounded-full border-4 border-white/80 bg-white/20 font-serif text-5xl">
+                    {displayName.charAt(0).toUpperCase()}
+                  </div>
+                )}
 
                 <h3 className="mt-4 font-serif text-2xl font-bold">
                   {displayName}
                 </h3>
 
                 <p className="mt-1 text-sm text-rose-100">
-                  {user?.email}
+                  {user.email}
                 </p>
               </div>
 
@@ -755,7 +874,7 @@ export default function DashboardPage() {
 
             <button
               type="button"
-              onClick={signOut}
+              onClick={handleSignOut}
               className="mt-6 flex w-full items-center justify-center gap-2 rounded-2xl border border-red-100 bg-white px-5 py-4 font-bold text-red-600 hover:bg-red-50"
             >
               <LogOut size={19} />
