@@ -1,49 +1,40 @@
 
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
+import {
+  browserLocalPersistence,
+  onAuthStateChanged,
+  setPersistence,
+  signInWithPopup,
+} from "firebase/auth";
 import {
   Heart,
   Loader2,
   AlertCircle,
 } from "lucide-react";
 
-import {
-  signInWithPopup,
-  signInWithRedirect,
-  getRedirectResult,
-  GoogleAuthProvider,
-} from "firebase/auth";
-
 import { auth, googleProvider } from "../../lib/firebase";
-import { useEffect } from "react";
 
 export default function LoginPage() {
   const router = useRouter();
 
   const [loading, setLoading] = useState(false);
+  const [checking, setChecking] = useState(true);
   const [error, setError] = useState("");
 
   useEffect(() => {
-    async function checkRedirectResult() {
-      try {
-        const result = await getRedirectResult(auth);
-
-        if (result?.user) {
-          router.replace("/dashboard");
-        }
-      } catch (err: unknown) {
-        setError(
-          err instanceof Error
-            ? err.message
-            : "Google sign-in could not be completed."
-        );
+    const unsubscribe = onAuthStateChanged(auth, (user) => {
+      if (user) {
+        router.replace("/dashboard");
+      } else {
+        setChecking(false);
       }
-    }
+    });
 
-    checkRedirectResult();
+    return () => unsubscribe();
   }, [router]);
 
   async function signInWithGoogle() {
@@ -51,18 +42,11 @@ export default function LoginPage() {
     setError("");
 
     try {
+      await setPersistence(auth, browserLocalPersistence);
+
       googleProvider.setCustomParameters({
         prompt: "select_account",
       });
-
-      const isMobile =
-        typeof window !== "undefined" &&
-        /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
-
-      if (isMobile) {
-        await signInWithRedirect(auth, googleProvider);
-        return;
-      }
 
       const result = await signInWithPopup(
         auth,
@@ -73,37 +57,39 @@ export default function LoginPage() {
         router.replace("/dashboard");
       }
     } catch (err: unknown) {
-      const errorCode =
+      const code =
         typeof err === "object" &&
         err !== null &&
         "code" in err
           ? String(err.code)
           : "";
 
-      if (errorCode === "auth/popup-closed-by-user") {
-        setError("You closed the Google sign-in window. Please try again.");
-      } else if (
-        errorCode === "auth/unauthorized-domain"
-      ) {
-        setError(
-          "This website domain is not yet authorised in Firebase Authentication."
-        );
-      } else if (
-        errorCode === "auth/popup-blocked"
-      ) {
-        setError(
-          "Your browser blocked the Google sign-in window. Please allow pop-ups and try again."
-        );
+      if (code === "auth/popup-closed-by-user") {
+        setError("Google sign-in was closed. Please try again.");
+      } else if (code === "auth/popup-blocked") {
+        setError("Your browser blocked the Google sign-in window. Please allow pop-ups and try again.");
+      } else if (code === "auth/unauthorized-domain") {
+        setError("This website domain is not authorised in Firebase.");
+      } else if (code === "auth/operation-not-allowed") {
+        setError("Google sign-in is not enabled in Firebase Authentication.");
       } else {
         setError(
           err instanceof Error
             ? err.message
-            : "Unable to sign in with Google. Please try again."
+            : "Unable to sign in. Please try again."
         );
       }
 
       setLoading(false);
     }
+  }
+
+  if (checking) {
+    return (
+      <main className="flex min-h-screen items-center justify-center bg-[#fff8fa]">
+        <Loader2 className="animate-spin text-rose-600" size={38} />
+      </main>
+    );
   }
 
   return (
@@ -137,10 +123,7 @@ export default function LoginPage() {
 
         {error && (
           <div className="mt-7 flex gap-3 rounded-xl border border-red-200 bg-red-50 p-4 text-sm text-red-700">
-            <AlertCircle
-              size={20}
-              className="shrink-0"
-            />
+            <AlertCircle size={20} className="shrink-0" />
             <p>{error}</p>
           </div>
         )}
@@ -152,10 +135,7 @@ export default function LoginPage() {
           className="mt-10 flex w-full items-center justify-center gap-3 rounded-full border border-gray-200 bg-white px-5 py-5 text-lg font-bold shadow-sm transition hover:bg-rose-50 disabled:opacity-60"
         >
           {loading ? (
-            <Loader2
-              className="animate-spin"
-              size={23}
-            />
+            <Loader2 className="animate-spin" size={23} />
           ) : (
             <span className="text-2xl font-bold text-blue-600">
               G
@@ -169,10 +149,7 @@ export default function LoginPage() {
 
         <p className="mt-8 text-center text-sm leading-7 text-gray-400">
           By continuing, you agree to our{" "}
-          <Link
-            href="/terms"
-            className="font-bold text-rose-600"
-          >
+          <Link href="/terms" className="font-bold text-rose-600">
             Terms of Use
           </Link>
           . Prominent Hearts is for adults aged 18 and above.
@@ -186,7 +163,6 @@ export default function LoginPage() {
             Return to homepage
           </Link>
         </div>
-
       </div>
     </main>
   );
