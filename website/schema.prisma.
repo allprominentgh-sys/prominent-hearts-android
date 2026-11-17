@@ -1,0 +1,112 @@
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Member {
+  firebaseUid    String                @id @map("firebase_uid")
+  email          String                @default("")
+  createdAt      DateTime              @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt      DateTime              @default(now()) @map("updated_at") @db.Timestamptz(6)
+  profile        MemberProfile?
+  privateRecord  MemberPrivate?
+  likesGiven     MemberLike[]          @relation("LikesGiven")
+  likesReceived  MemberLike[]          @relation("LikesReceived")
+  conversations ConversationMember[]
+  messages       Message[]
+  notifications  MemberNotification[]
+
+  @@map("members")
+}
+
+model MemberProfile {
+  firebaseUid           String   @id @map("firebase_uid")
+  fullName              String   @default("") @map("full_name")
+  username              String?  @unique
+  location              String   @default("")
+  bio                   String   @default("")
+  relationshipIntention String   @default("Marriage") @map("relationship_intention")
+  photoUrl              String   @default("") @map("photo_url")
+  isActive              Boolean  @default(true) @map("is_active")
+  createdAt             DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt             DateTime @default(now()) @map("updated_at") @db.Timestamptz(6)
+  member                Member   @relation(fields: [firebaseUid], references: [firebaseUid], onDelete: Cascade)
+
+  @@index([isActive], map: "idx_member_profiles_active")
+  @@map("member_profiles")
+}
+
+model MemberPrivate {
+  firebaseUid String   @id @map("firebase_uid")
+  createdAt   DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt   DateTime @default(now()) @map("updated_at") @db.Timestamptz(6)
+  member      Member   @relation(fields: [firebaseUid], references: [firebaseUid], onDelete: Cascade)
+
+  @@map("member_private")
+}
+
+model MemberLike {
+  likerUid  String   @map("liker_uid")
+  likedUid  String   @map("liked_uid")
+  createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
+  liker     Member   @relation("LikesGiven", fields: [likerUid], references: [firebaseUid], onDelete: Cascade)
+  liked     Member   @relation("LikesReceived", fields: [likedUid], references: [firebaseUid], onDelete: Cascade)
+
+  @@id([likerUid, likedUid])
+  @@index([likedUid], map: "idx_member_likes_liked_uid")
+  @@map("member_likes")
+}
+
+model Conversation {
+  id        String               @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  createdAt DateTime             @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt DateTime             @default(now()) @map("updated_at") @db.Timestamptz(6)
+  members   ConversationMember[]
+  messages  Message[]
+
+  @@map("conversations")
+}
+
+model ConversationMember {
+  conversationId String       @map("conversation_id") @db.Uuid
+  memberUid      String       @map("member_uid")
+  joinedAt       DateTime     @default(now()) @map("joined_at") @db.Timestamptz(6)
+  conversation   Conversation @relation(fields: [conversationId], references: [id], onDelete: Cascade)
+  member         Member       @relation(fields: [memberUid], references: [firebaseUid], onDelete: Cascade)
+
+  @@id([conversationId, memberUid])
+  @@map("conversation_members")
+}
+
+model Message {
+  id             String       @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  conversationId String       @map("conversation_id") @db.Uuid
+  senderUid      String       @map("sender_uid")
+  body           String
+  createdAt      DateTime     @default(now()) @map("created_at") @db.Timestamptz(6)
+  readAt         DateTime?    @map("read_at") @db.Timestamptz(6)
+  conversation   Conversation @relation(fields: [conversationId], references: [id], onDelete: Cascade)
+  sender         Member       @relation(fields: [senderUid], references: [firebaseUid], onDelete: Cascade)
+
+  @@index([conversationId, createdAt], map: "idx_messages_conversation_created")
+  @@map("messages")
+}
+
+model MemberNotification {
+  id        String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  memberUid String    @map("member_uid")
+  type      String
+  title     String
+  body      String    @default("")
+  readAt    DateTime? @map("read_at") @db.Timestamptz(6)
+  createdAt DateTime  @default(now()) @map("created_at") @db.Timestamptz(6)
+  member    Member    @relation(fields: [memberUid], references: [firebaseUid], onDelete: Cascade)
+
+  @@index([memberUid, createdAt], map: "idx_notifications_member_created")
+  @@map("member_notifications")
+}
